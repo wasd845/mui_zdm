@@ -1,0 +1,15 @@
+.mui-bar {
+  background-color: #FE413F !important;
+}
+.mui-bar .mui-title {
+  color: white !important;
+}
+body {
+  background-color: white;
+}
+.mui-content {
+  background-color: white;
+}
+div {
+  color: #222;
+}
