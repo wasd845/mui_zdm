@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/main.css" />
+	</head>
+
+	<body class="my">
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">我的</h1>
+		</header>
+		<div class="mui-content">
+			<div class="user-wrap">
+
+				<img src="../imgs/avatar.jpg" />
+
+			</div>
+
+			<div class="panel-wrap">
+				<div class="panel" onclick="jump2Page('favorite.html')">
+					<img src="../imgs/wode_icon_like.svg" class="icon" />
+					<span class="name">收藏</span>
+					<img src="../imgs/arrow_right.png" class="arrow" />
+				</div>
+				<div class="panel" onclick="jump2Page('footprint.html')">
+					<img src="../imgs/wode_icon_history.svg" class="icon" />
+					<span class="name">足迹</span>
+					<img src="../imgs/arrow_right.png" class="arrow" />
+				</div>
+
+			</div>
+
+			<div class="panel-wrap">
+				<div class="panel" style="display: none;">
+					<img src="../imgs/wode_icon_feedback.svg" class="icon" />
+					<span class="name">反馈</span>
+					<img src="../imgs/arrow_right.png" class="arrow" />
+				</div>
+				<div class="panel" style="display: none;">
+					<img src="../imgs/wode_icon_servicer.svg" class="icon" />
+					<span class="name">客服</span>
+					<img src="../imgs/arrow_right.png" class="arrow" />
+				</div>
+				<div class="panel" onclick="help()">
+					<img src="../imgs/wode_icon_help.svg" class="icon" />
+					<span class="name">教程</span>
+					<img src="../imgs/arrow_right.png" class="arrow" />
+				</div>
+
+			</div>
+
+			<div class="panel-wrap">
+				<div class="panel" id="checkUpdate" onclick="checkUpdate()">
+					<img src="../imgs/update.png" class="icon" />
+					<span class="name">更新</span>
+					<img src="../imgs/arrow_right.png" class="arrow" />
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/zepto113.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			mui.plusReady(() => {
+				if(plus.os.name == "iOS") {
+					$("#checkUpdate").css("display", "none")
+				}
+			})
+
+			//跳转领券教程
+			function help() {
+				mui.openWindow("help.html")
+			}
+
+			function jump2Page(url) {
+				console.log(url)
+				mui.openWindow(url)
+			}
+
+			//檢查更新
+			function checkUpdate() {
+
+				plus.runtime.getProperty(plus.runtime.appid, function(wgtinfo) {
+					var currVersion = wgtinfo.version;
+					if(mui.os.android) {
+						plus.nativeUI.showWaiting("等待中...");
+						mui.ajax('http://zdm100.com/app/appversion.json', {
+							dataType: 'json',
+							type: 'get',
+							timeout: 5000,
+							cache:false,
+							success: function(data) {
+								if(data.version > currVersion) {
+									plus.nativeUI.confirm('发现新版本，点击更新到最新版本！', function(e) {
+										console.log(e.index);
+										if(e.index == 0) {
+											downApk(data.url);
+										}
+									}, '提示');
+								} else {
+									mui.alert("已经是最新版本！");
+								}
+
+							},
+							error: function(xhr, type, errorThrown) {
+								//异常处理；
+								console.log(xhr)
+							},
+							complete: function() {
+								plus.nativeUI.closeWaiting();
+							}
+						});
+					}
+				});
+			}
+
+			//下載apk文件 并安裝
+			var wgtWaiting = null;
+
+			function downApk(url) {
+				wgtWaiting = plus.nativeUI.showWaiting("开始下载");
+				var dtask = plus.downloader.createDownload(url, {}, function(d, status) {
+					if(status == 200) { // 下载成功
+						var path = d.filename;
+						plus.runtime.install(path); // 安装下载的apk文件
+					} else {
+						plus.nativeUI.toast('下载失败，请稍后重试...');
+					}
+					if(wgtWaiting) {
+						wgtWaiting.close();
+					}
+				});
+
+				dtask.addEventListener("statechanged", function(download, status) {
+					switch(download.state) {
+						case 2:
+							wgtWaiting.setTitle("已连接到服务器");
+							break;
+						case 3:
+							var percent = download.downloadedSize / download.totalSize * 100;
+							wgtWaiting.setTitle("已下载 " + parseInt(percent) + "%");
+							break;
+						case 4:
+							wgtWaiting.setTitle("下载完成");
+							break;
+					}
+				})
+
+				dtask.start();
+			}
+		</script>
+	</body>
+
+</html>

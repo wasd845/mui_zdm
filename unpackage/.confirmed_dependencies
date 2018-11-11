@@ -1,0 +1,85 @@
+{
+  "index.html": {
+    "resources": [
+      "pages/home.html"
+    ],
+    "refer": [
+      "pages/home.html",
+      "pages/talent.html",
+      "pages/my.html",
+      "pages/category.html",
+      "pages/ddq.html"
+    ]
+  },
+  "pages/home.html": {
+    "refer": [
+      "pages/detail.html",
+      "pages/category.html",
+      "pages/search.html",
+      "pages/help.html",
+      "pages/top100.html",
+      "pages/nine.html",
+      "pages/chosen.html",
+      "pages/subject.html"
+    ]
+  },
+  "pages/category.html": {
+    "refer": [
+      "pages/goodslist.html"
+    ]
+  },
+  "pages/goodslist.html": {
+    "refer": [
+      "pages/detail.html"
+    ]
+  },
+  "pages/search.html": {
+    "refer": [
+      "pages/detail.html",
+      "pages/search.html"
+    ]
+  },
+  "pages/talent.html": {
+    "refer": [
+      "pages/talent-art.html"
+    ]
+  },
+  "pages/ddq.html": {
+    "refer": [
+      "pages/detail.html"
+    ]
+  },
+  "pages/top100.html": {
+    "refer": [
+      "pages/detail.html"
+    ]
+  },
+  "pages/my.html": {
+    "refer": [
+      "pages/favorite.html",
+      "pages/footpoint.html",
+      "pages/footprint.html",
+      "pages/help.html"
+    ]
+  },
+  "pages/favorite.html": {
+    "refer": [
+      "pages/detail.html"
+    ]
+  },
+  "pages/detail.html": {
+    "refer": [
+      "pages/share.html"
+    ]
+  },
+  "pages/chosen.html": {
+    "refer": [
+      "pages/detail.html"
+    ]
+  },
+  "pages/subject.html": {
+    "refer": [
+      "pages/detail.html"
+    ]
+  }
+}

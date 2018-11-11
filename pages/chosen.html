@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/animate.min.css" />
+		<link rel="stylesheet" href="../css/main.css" />
+	</head>
+
+	<body class="ninepage" id="pullrefresh">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">小编推荐</h1>
+		</header>
+
+		<div class="mui-content">
+
+			<!--商品列表-->
+			<div id="listview">
+
+			</div>
+
+		</div>
+
+		<!--返回顶部-->
+
+		<span class="totop hide mui-icon mui-icon mui-icon-arrowup" id="totop" onclick="scrolltotop()"></span>
+
+		<!--选项卡模板-->
+		<script type="text/html" id='tabTpl'>
+			{{each catelist item idx}}
+			<div id="{{currTab==idx?'currTab':''}}" class="tab-item {{currTab==idx?'active':''}}" data-idx='{{idx}}' onclick="tabTap(this)">
+				{{item.son_name}}
+			</div>
+			{{/each}}
+		</script>
+
+		<!--商品列表模板-->
+		<script type="text/html" id='goodsTpl'>
+			{{each goodslist item idx}}
+			<div class="goods-item {{idx%2==1?'right':''}}" data-idx='{{(min_id-1)*50+idx}}' onclick="goodsTap(this)">
+				<img class="lazy" data-src="{{item.itempic}}_310x310.jpg" />
+				<span class="title mui-ellipsis">{{item.itemtitle}}</span>
+				<div class="price-wrap">
+					<div class="itemendprice">￥{{item.itemendprice}}</div>
+					<div class="itemprice">￥{{item.itemprice}}</div>
+					<div class="itemsale">销量{{item.itemsale}}</div>
+				</div>
+			</div>
+			{{/each}}
+		</script>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/template-web.js"></script>
+		<script type="text/javascript" src="../js/api.js"></script>
+		<script type="text/javascript" src="../js/zepto113.js"></script>
+		<script type="text/javascript" src="../js/lazyload.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: "#pullrefresh", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						style: 'circle', //必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+						color: '#FE413F', //可选，默认“#2BD009” 下拉刷新控件颜色
+						height: '50px', //可选,默认50px.下拉刷新控件的高度,
+						range: '100px', //可选 默认100px,控件可下拉拖拽的范围
+						offset: '50px', //可选 默认0px,下拉刷新控件的起始位置
+						auto: false, //可选,默认false.首次加载自动上拉刷新一次
+						callback: function() { //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+							min_id = 1;
+							getGoods();
+						}
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: function() { //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+							getGoods();
+						}
+					}
+				},
+			})
+
+			mui.plusReady(() => {
+				min_id = 1;
+				getGoods();
+			})
+
+			//商品列表
+			var pageCount = 50;
+			var nomore = false;
+			var min_id = 1;
+			var goodslist = []
+
+			function getGoods() {
+				api.getJuGoods(min_id, (res) => {
+					if(res.code == 1) {
+
+						let list = res['data']
+						nomore = list.length < pageCount
+						if(min_id == 1) {
+							goodslist = []
+						}
+
+						//仅用于缓存(点击跳转详情)
+						goodslist = goodslist.concat(list)
+
+						var html = template('goodsTpl', {
+							goodslist: list,
+							min_id: min_id
+						})
+
+						if(min_id == 1) {
+							$('#listview').html(html)
+
+						} else if(min_id > 1 && list.length > 0) {
+
+							$('#listview').append(html)
+
+						}
+
+						min_id = res['min_id']
+
+						myLazyLoad.update()
+					}
+
+				})
+
+				if(min_id == 1 && mui('#pullrefresh').pullRefresh()) {
+					mui('#pullrefresh').pullRefresh().endPulldown();
+				}
+				if(mui('#pullrefresh').pullRefresh()) {
+					mui('#pullrefresh').pullRefresh().endPullupToRefresh(nomore);
+				}
+			}
+
+			function goodsTap(e) {
+				let idx = e.dataset['idx']
+				if(goodslist[idx] && window.plus) {
+					mui.openWindow({
+						url: 'detail.html',
+						id: 'detail',
+
+						styles: {
+							popGesture: "close"
+						},
+						extras: {
+							goods: goodslist[idx]
+						}
+					})
+				} else {
+					plus.nativeUI.alert('出错了')
+				}
+
+			}
+
+			//返回顶部
+
+			function totopIn() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.remove('hide')
+				totopview.classList.add('fadeInUp', 'animated')
+				totopview.addEventListener('animationend', totopInCallBack)
+			};
+
+			function totopInCallBack() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.remove('fadeOutDown', 'animated')
+				totopview.removeEventListener('animationend', totopInCallBack)
+			}
+
+			function totopOut() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.add('fadeOutDown', 'animated')
+				totopview.addEventListener('animationend', totopOutCallBack)
+			};
+
+			function totopOutCallBack() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.remove('fadeOutDown', 'animated')
+				totopview.classList.add('hide')
+				totopview.removeEventListener('animationend', totopOutCallBack)
+			}
+
+			var totop = false;
+			var scrollTop = 0;
+			window.onscroll = function() {
+				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+				if(scrollTop > 1500 && !totop) {
+					totop = true;
+					totopIn()
+				} else if(scrollTop < 500 && totop) {
+					totop = false;
+					totopOut()
+				}
+			}
+
+			function scrolltotop() {
+				window.scrollTo({
+					top: 0,
+					behavior: "smooth"
+				})
+			}
+
+			//图片懒加载器
+			var myLazyLoad = new LazyLoad({
+				elements_selector: ".lazy"
+			});
+		</script>
+	</body>
+
+</html>

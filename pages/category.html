@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/main.css" />
+
+		<style>
+			.mui-row.mui-fullscreen>[class*="mui-col-"] {
+				height: 100%;
+			}
+			
+			.mui-col-xs-3,
+			.mui-col-xs-9 {
+				overflow-y: auto;
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body class="category">
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">分类</h1>
+		</header>
+
+		<div class="mui-content mui-row mui-fullscreen">
+			<div class="mui-col-xs-3">
+				<div id="segmentedControls">
+
+				</div>
+			</div>
+			<div id="segmentedControlContents" class="mui-col-xs-9">
+
+			</div>
+		</div>
+
+		<!--分类模板-->
+		<script type="text/template" id="leftTpl">
+			{{each classify item idx}}
+			<a class="item {{leftIdx==idx?'active':''}}" onclick="leftTap({{idx}})"> {{item.main_name}}</a>
+			{{/each}}
+		</script>
+
+		<script type="text/template" id="rightTpl">
+			{{each classify2 item pidx}}
+			<div class="content">
+				<div class="title">{{item.next_name}}</div>
+				<div class="grid">
+					{{each item.info cate idx}}
+					<div class="item" data-pidx="{{pidx}}" data-idx="{{idx}}" onclick="tolist(this)">
+						<div class="image">
+							<img class="lazy" data-src="{{cate.imgurl}}" />
+						</div>
+
+						<div class="name">{{cate.son_name}}</div>
+					</div>
+					{{/each}}
+				</div>
+			</div>
+			{{/each}}
+		</script>
+
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/template-web.js"></script>
+		<script type="text/javascript" src="../js/zepto113.js"></script>
+		<script type="text/javascript" src="../js/lazyload.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var general_classify = []
+			mui.plusReady(() => {
+
+			})
+
+			window.addEventListener("show", function() {
+				if(general_classify.length > 0) {
+					return
+				}
+				let classifyStr = plus.storage.getItem("general_classify")
+				if(classifyStr) {
+					general_classify = JSON.parse(classifyStr)
+					leftTap(0)
+				} else {
+					getCategory()
+				}
+			})
+
+			//分类接口
+			function getCategory() {
+				api.getCategory((res) => {
+					if(res.code == 1) {
+						classifyStr = res['general_classify'];
+						leftTap(0)
+
+						//分类数据缓存到本地
+						plus.storage.setItem("general_classify", JSON.stringify(classifyStr))
+
+					}
+				})
+			}
+
+			var leftIdx = 0
+
+			function leftTap(idx) {
+				leftIdx = idx
+				renderleft()
+				renderright(idx)
+			}
+
+			function renderleft() {
+				let html = template('leftTpl', {
+					classify: general_classify,
+					leftIdx: leftIdx
+				})
+				$('#segmentedControls').html(html)
+			}
+
+			function renderright(idx) {
+				let html = template('rightTpl', {
+					classify2: general_classify[idx].data,
+					pid: general_classify[idx].cid
+				})
+				$('#segmentedControlContents').html(html)
+
+				if(myLazyLoad) {
+					myLazyLoad.update()
+				}
+			}
+
+			function tolist(e) {
+				let pidx = e.dataset.pidx
+				let idx = e.dataset.idx
+
+				mui.openWindow({
+					url: "goodslist.html",
+					id: "goodslist",
+					extras: {
+						cateidx: leftIdx,
+						pidx: pidx,
+						idx: idx
+					},
+				})
+			}
+
+			//图片懒加载器
+			var myLazyLoad = new LazyLoad({
+				elements_selector: ".lazy"
+			});
+		</script>
+	</body>
+
+</html>

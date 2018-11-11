@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/share.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" id='titlebar' style="background: transparent;">
+			<a class="mui-action-back mui-icon mui-icon-closeempty mui-pull-left"></a>
+			<h1 class="mui-title">分享</h1>
+		</header>
+
+		<div class="mui-content">
+
+			<textarea rows="8">
+			
+			
+			</textarea>
+
+			<button class="copyBtn" onclick="copy()">复制文案</button>
+
+			<div class="tips"></div>
+
+			<div class="part-title-wrap">
+				<div class="splite">
+					<span class="title">分享到 </span>
+				</div>
+			</div>
+
+			<div class="share-app-wrap">
+				<div class="item" onclick="launchApp('wx')">
+					<img class="icon" src="../imgs/logo_wechat.png" />
+					<span class="name">微信</span>
+				</div>
+				<div class="item" onclick="launchApp('qq')">
+					<img class="icon" src="../imgs/logo_qq.png" />
+					<span class="name">QQ</span>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/api.js"></script>
+		<script type="text/javascript" src="../js/zepto113.js"></script>
+		<script type="text/javascript" src="../js/template-web.js"></script>
+		<script type="text/javascript">
+			var goods = null
+			var share_pic_sd_path = ""
+			mui.init()
+
+			mui.plusReady(() => {
+				let self = plus.webview.currentWebview();
+				goods = self.goods
+				setData()
+				getData()
+			})
+
+			function getData() {
+				plus.nativeUI.showWaiting()
+				getGaoyongUrl()
+			}
+
+			function downItempic() {
+				//下载主图（用于分享）
+				plus.downloader.createDownload(goods.itempic + "_310x310.jpg", {
+					filename: "_downloads/share_pic.jpg"
+				}, (d, status) => {
+					share_pic_sd_path = plus.io.convertLocalFileSystemURL(d.filename)
+					console.log(share_pic_sd_path)
+				}).start();
+			}
+			//淘口令
+			function getTkl() {
+				//生成淘口令（根据优惠券链接）
+				api.getTkl(goods["coupon_click_url"], (resp) => {
+					goods["tkl"] = resp["tkl"]
+					getShortUrl()
+				})
+			}
+
+			//短网址
+			function getShortUrl() {
+				api.getShortUrl(goods["coupon_click_url"], (res) => {
+					if(res.Code == 0) {
+						goods["ShortUrl"] = res.ShortUrl
+					} else {
+						goods["ShortUrl"] = goods["http://zdm100.com"]
+					}
+					setData()
+				})
+			}
+
+			//生成高佣链接
+			function getGaoyongUrl(itemid) {
+				if(goods["coupon_click_url"]) {
+					getTkl()
+					return
+				}
+				api.getGaoyong(itemid, (res) => {
+					if(res.code == 1 && res.data["coupon_click_url"]) {
+						coupon_click_url = res.data["coupon_click_url"]
+						goods["coupon_click_url"] = coupon_click_url
+						getTkl()
+					}
+				})
+
+			}
+
+			var shareTpl = "{{goods.itemtitle}}\r\n【在售价】{{goods.itemprice}}元\r\n【券后价】{{goods.itemendprice}}元\r\n【下单链接】{{goods.ShortUrl}}\r\n－－－－－－－－－－－－\r\n复制这条信息{{goods.tkl}}打开【手机淘宝】即可领券";
+
+			function setData() {
+				plus.nativeUI.closeWaiting()
+				let html = template.render(shareTpl, {
+					goods: goods
+				})
+				$("textarea").html(html)
+			}
+
+			function copy() {
+				let shareStr = $("textarea").html()
+				if(goods.tkl && goods.ShortUrl) {
+					if(plus.os.name == "Android") {
+						var Context = plus.android.importClass("android.content.Context");
+						var main = plus.android.runtimeMainActivity();
+						var clip = main.getSystemService(Context.CLIPBOARD_SERVICE);
+						plus.android.invoke(clip, "setText", shareStr);
+						copyed = true;
+						plus.nativeUI.toast("复制成功")
+					} else if(plus.os.name == "iOS") {
+						var UIPasteboard = plus.ios.importClass("UIPasteboard");
+						var generalPasteboard = UIPasteboard.generalPasteboard();
+						//设置/获取文本内容:
+						generalPasteboard.plusCallMethod({
+							setValue: shareStr,
+							forPasteboardType: "public.utf8-plain-text"
+						});
+						generalPasteboard.plusCallMethod({
+							valueForPasteboardType: "public.utf8-plain-text"
+						});
+						copyed = true;
+						plus.nativeUI.toast("复制成功")
+					}
+				} else {
+					getData()
+					plus.nativeUI.toast("复制失败,请重试")
+				}
+			}
+
+			//是否复制文案
+			var copyed = false;
+
+			function launchApp(appTag) {
+				if(!copyed) {
+					plus.nativeUI.toast("请先复制文案")
+					return
+				}
+
+				let appMap = {
+					wx: {
+						pname: "com.tencent.mm",
+						action: 'weixin://',
+						name: "微信"
+					},
+					qq: {
+						pname: "com.tencent.mqq",
+						action: 'mqq://',
+						name: "手机QQ"
+					}
+				}
+
+				let app = appMap[appTag]
+				if(!plus.runtime.isApplicationExist({
+						pname: app.pname,
+						action: app.action
+					})) {
+					plus.nativeUI.toast(app.name + "未安装")
+					return
+				}
+
+				plus.nativeUI.toast("正在打开" + app.name + "...")
+				plus.runtime.launchApplication({
+					pname: app.pname,
+					action: app.action
+				}, function(e) {
+					//启动第三方app出现异常
+					console.log(JSON.stringify(e))
+				})
+			}
+		</script>
+	</body>
+
+</html>

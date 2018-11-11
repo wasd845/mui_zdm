@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+	
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/main.css" />
+		
+		<style>
+			img{
+				max-width: 100%;
+				margin: 0 auto;
+			}
+		</style>
+	</head>
+
+	<body class="talentartpage">
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">达人说</h1>
+		</header>
+
+		<div class="mui-content">
+
+		</div>
+
+		<script type="text/template" id="articleTpl">
+			<div class="card-wrap">
+				<img class="lazy pic" data-src="{{article.app_image}}" />
+				<div class="title">{{article.name}}</div>
+				<div class="info-wrap">
+					<img class="avatar" src="{{article.head_img}}" />
+					<span class="nickname">{{article.talent_name}}</span>
+					<img class="eye" src="../imgs/eye.png" />
+					<span>{{article.readtimes}}</span>
+				</div>
+			</div>
+			<div class="htmlcontent">
+				{{article.article}}
+			</div>
+
+		</script>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/template-web.js"></script>
+		<script type="text/javascript" src="../js/zepto113.js"></script>
+		<script type="text/javascript" src="../js/lazyload.js"></script>
+		<script type="text/javascript" src="../js/api.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: "body", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						style: 'circle', //必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+						color: '#FE413F', //可选，默认“#2BD009” 下拉刷新控件颜色
+						height: '50px', //可选,默认50px.下拉刷新控件的高度,
+						range: '100px', //可选 默认100px,控件可下拉拖拽的范围
+						offset: '50px', //可选 默认0px,下拉刷新控件的起始位置
+						auto: false, //可选,默认false.首次加载自动上拉刷新一次
+						callback: function() { //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+							mui('body').pullRefresh().endPulldown();
+						}
+					}
+				},
+			})
+			
+			/**
+			 * article样式有问题 暂停开发
+			 */
+			mui.plusReady(() => {
+				let self = plus.webview.currentWebview()
+				let id = self.aid
+				if(!id) {
+					return
+				}
+				api.getTalentArt(id, (res) => {
+					if(res.code == 1) {
+						res.data.article = HtmlUtil.htmlDecodeByRegExp(res.data.article)
+						var html = template('articleTpl', {
+							article: res.data.article,
+						})
+						$(".mui-content").html(res.data.article)
+						myLazyLoad.update()
+					}
+
+				})
+			})
+
+			//图片懒加载器
+			var myLazyLoad = new LazyLoad({
+				elements_selector: ".lazy"
+			});
+
+			var HtmlUtil = {
+				/*1.用浏览器内部转换器实现html转码*/
+				htmlEncode: function(html) {
+					//1.首先动态创建一个容器标签元素，如DIV
+					var temp = document.createElement("div");
+					//2.然后将要转换的字符串设置为这个元素的innerText(ie支持)或者textContent(火狐，google支持)
+					(temp.textContent != undefined) ? (temp.textContent = html) : (temp.innerText = html);
+					//3.最后返回这个元素的innerHTML，即得到经过HTML编码转换的字符串了
+					var output = temp.innerHTML;
+					temp = null;
+					return output;
+				},
+				/*2.用浏览器内部转换器实现html解码*/
+				htmlDecode: function(text) {
+					//1.首先动态创建一个容器标签元素，如DIV
+					var temp = document.createElement("div");
+					//2.然后将要转换的字符串设置为这个元素的innerHTML(ie，火狐，google都支持)
+					temp.innerHTML = text;
+					//3.最后返回这个元素的innerText(ie支持)或者textContent(火狐，google支持)，即得到经过HTML解码的字符串了。
+					var output = temp.innerText || temp.textContent;
+					temp = null;
+					return output;
+				},
+				/*3.用正则表达式实现html转码*/
+				htmlEncodeByRegExp: function(str) {
+					var s = "";
+					if(str.length == 0) return "";
+					s = str.replace(/&/g, "&amp;");
+					s = s.replace(/</g, "&lt;");
+					s = s.replace(/>/g, "&gt;");
+					s = s.replace(/ /g, "&nbsp;");
+					s = s.replace(/\'/g, "&#39;");
+					s = s.replace(/\"/g, "&quot;");
+					return s;
+				},
+				/*4.用正则表达式实现html解码*/
+				htmlDecodeByRegExp: function(str) {
+					var s = "";
+					if(str.length == 0) return "";
+					s = str.replace(/&amp;/g, "&");
+					s = s.replace(/&lt;/g, "<");
+					s = s.replace(/&gt;/g, ">");
+					s = s.replace(/&nbsp;/g, " ");
+					s = s.replace(/&#39;/g, "\'");
+					s = s.replace(/&quot;/g, "\"");
+					return s;
+				}
+			};
+		</script>
+	</body>
+
+</html>

@@ -8,15 +8,38 @@
 		<script src="js/mui.min.js"></script>
 		<link href="css/mui.min.css" rel="stylesheet" />
 		<link rel="stylesheet" href="css/main.css" />
-
 	</head>
 
-	<body>
-		<header class="mui-bar mui-bar-nav">
-			<h1 class="mui-title">首页</h1>
-		</header>
-		
+	<body class="main">
 		<div class="mui-content"></div>
+
+		<!--底部导航-->
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" id="home" href="pages/home.html">
+				<div class="icon home">
+
+				</div>
+				<span class="mui-tab-label">首页</span>
+			</a>
+			<a class="mui-tab-item" id="category" href="pages/category.html">
+				<div class="icon category">
+
+				</div>
+				<span class="mui-tab-label">分类</span>
+			</a>
+			<a class="mui-tab-item" id="talent" href="pages/ddq.html">
+				<div class="icon talent">
+
+				</div>
+				<span class="mui-tab-label">咚咚抢</span>
+			</a>
+			<a class="mui-tab-item" id="my" href="pages/my.html">
+				<div class="icon my">
+				</div>
+				<span class="mui-tab-label">我的</span>
+			</a>
+		</nav>
+
 	</body>
 
 	<script type="text/javascript" charset="utf-8">
@@ -24,7 +47,152 @@
 		mui.plusReady(() => {
 			plus.navigator.setStatusBarBackground('#FE413F');
 			plus.navigator.setStatusBarStyle('light');
+
+			var self = plus.webview.currentWebview();
+			plus.storage.setItem('MainPageID', self.id)
+
+			initSubPages();
+
+			checkUpdate();
 		})
+
+		mui.init();
+
+		var subpages = ['pages/home.html', 'pages/category.html', 'pages/ddq.html', 'pages/my.html'];
+		var titles = ['首页', '分类', '咚咚抢', '我的'];
+		var subpage_style = {　　
+			top: '0px',
+			　　bottom: '61px',
+			　　hardwareAccelerated: true //开启硬件加速
+		};
+		var activeTab = subpages[0];
+
+		function initSubPages() {
+			var self = plus.webview.currentWebview();
+			plus.storage.setItem('MainID', self.id)
+			for(var i = 0; i < subpages.length; i++) {　　　　　
+				var sub = plus.webview.create(subpages[i], subpages[i], subpage_style);　　　
+				if(i > 0) {　　
+					sub.hide();　　　　
+				}　　　
+				self.append(sub);　　
+			}
+			mui('.mui-bar-tab').on('tap', 'a', function(e) {　
+				console.log(JSON.stringify(e))
+				var targetTab = this.getAttribute('href');　　
+
+				if(targetTab == activeTab) {
+					return;
+				}　　
+
+				var targetPage = plus.webview.getWebviewById(targetTab)
+				mui.fire(targetPage, 'show')
+
+				//显示目标选项卡
+				plus.webview.show(targetTab);
+
+				//隐藏当前;
+				plus.webview.hide(activeTab);
+
+				activeTab = targetTab
+				plus.device.setWakelock(true);
+			});
+		}
+
+		//分类
+		window.addEventListener('toCategory', function(e) {
+			var baseul = document.getElementById("category");
+			mui.trigger(baseul, 'touchstart');
+			mui.trigger(baseul, 'tap');
+		});
+
+		//咚咚抢
+		window.addEventListener('toDDQ', function(e) {
+			var baseul = document.getElementById("talent");
+			mui.trigger(baseul, 'touchstart');
+			mui.trigger(baseul, 'tap');
+		});
+
+		//檢查更新
+		function checkUpdate() {
+			plus.runtime.getProperty(plus.runtime.appid, function(wgtinfo) {
+				var currVersion = wgtinfo.version;
+				if(mui.os.android) {
+					mui.ajax('http://zdm100.com/app/appversion.json', {
+						dataType: 'json',
+						type: 'get',
+						timeout: 5000,
+						cache: false,
+						success: function(data) {
+							//level重要级别
+							//0 普通级 不提示
+							//>0 提示
+							//\n\n 红红 \n 恍恍惚惚
+							console.log(JSON.stringify(data))
+							if(data.version > currVersion && data.level > 0) {
+								if(data.level == 1) {
+									plus.nativeUI.confirm('发现新版本，点击体验最新版本！'+data.desc, function(e) {
+										console.log(e.index);
+										if(e.index == 0) {
+											downApk(data.url);
+										}
+									}, '更新');
+								} else if(data.level == 2) {
+									plus.nativeUI.alert('此版本有重要更新，点击更新到最新版本才能正常使用！'+data.desc, function(e) {
+										console.log(e.index);
+										if(e.index == 0) {
+											downApk(data.url);
+										}
+									}, '重要更新', "更新");
+								}
+							}
+						},
+						error: function(xhr, type, errorThrown) {
+							//异常处理；
+							console.log(xhr)
+						},
+						complete: function() {
+
+						}
+					});
+				}
+			});
+		}
+
+		//下載apk文件 并安裝
+		var wgtWaiting = null;
+
+		function downApk(url) {
+			wgtWaiting = plus.nativeUI.showWaiting("开始下载");
+			var dtask = plus.downloader.createDownload(url, {}, function(d, status) {
+				if(status == 200) { // 下载成功
+					var path = d.filename;
+					plus.runtime.install(path); // 安装下载的apk文件
+				} else {
+					plus.nativeUI.toast('下载失败，请稍后重试...');
+				}
+				if(wgtWaiting) {
+					wgtWaiting.close();
+				}
+			});
+
+			dtask.addEventListener("statechanged", function(download, status) {
+				switch(download.state) {
+					case 2:
+						wgtWaiting.setTitle("已连接到服务器");
+						break;
+					case 3:
+						var percent = download.downloadedSize / download.totalSize * 100;
+						wgtWaiting.setTitle("已下载 " + parseInt(percent) + "%");
+						break;
+					case 4:
+						wgtWaiting.setTitle("下载完成");
+						break;
+				}
+			})
+
+			dtask.start();
+		}
 	</script>
 
 </html>

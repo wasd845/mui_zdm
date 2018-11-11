@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/animate.min.css" />
+		<link rel="stylesheet" href="../css/main.css" />
+	</head>
+
+	<body class="favoritepage" id="pullrefresh">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">足迹</h1>
+			<a class="mui-icon mui-icon mui-icon-trash mui-icon-right-nav mui-pull-right" onclick="del()"></a>
+		</header>
+
+		<div class="mui-content">
+			<!--商品列表-->
+			<div id="listview">
+
+			</div>
+
+			<div id="nodata" style="display: none;flex-direction: column;align-items: center;">
+				<img style="margin-top: 50px; width: 200px; height: auto;" src="../imgs/nodata.png" />
+				<span style="color: #999;">暂无数据</span>
+			</div>
+
+		</div>
+
+		<!--返回顶部-->
+
+		<span class="totop hide mui-icon mui-icon mui-icon-arrowup" id="totop" onclick="scrolltotop()"></span>
+
+		<!--商品列表模板-->
+		<script type="text/html" id='goodsTpl'>
+			{{each goodslist item idx}}
+			<div class="goods-item" data-idx='{{idx}}' onclick="goodsTap(this)">
+				<img class="lazy pic" data-src="{{item.itempic}}_310x310.jpg" />
+				<div class="info-wrap">
+					<div class="title mui-ellipsis-2">{{item.itemtitle}}</div>
+					<div class="price-wrap">
+						<div class="itemendprice">券后￥{{item.itemendprice}}</div>
+						<div class="itemprice">在售￥{{item.itemprice}}</div>
+					</div>
+				</div>
+			</div>
+			{{/each}}
+		</script>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/template-web.js"></script>
+		<script type="text/javascript" src="../js/api.js"></script>
+		<script type="text/javascript" src="../js/zepto113.js"></script>
+		<script type="text/javascript" src="../js/lazyload.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: "#pullrefresh", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						style: 'circle', //必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+						color: '#FE413F', //可选，默认“#2BD009” 下拉刷新控件颜色
+						height: '50px', //可选,默认50px.下拉刷新控件的高度,
+						range: '100px', //可选 默认100px,控件可下拉拖拽的范围
+						offset: '50px', //可选 默认0px,下拉刷新控件的起始位置
+						auto: false, //可选,默认false.首次加载自动上拉刷新一次
+						callback: function() { //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+							mui('#pullrefresh').pullRefresh().endPulldown();
+						}
+					}
+				},
+			})
+
+			var goodslist = []
+			mui.plusReady(() => {
+				getData()
+			})
+
+			function getData() {
+				goodslist = JSON.parse(plus.storage.getItem("footprint"))
+								
+				if(!goodslist) {
+					$("#nodata").css("display", "flex")
+					$('#listview').html("")
+					return
+				}
+				var html = template('goodsTpl', {
+					goodslist: goodslist,
+				})
+
+				$('#listview').html(html)
+
+				myLazyLoad.update()
+			}
+
+			function goodsTap(e) {
+				let idx = e.dataset['idx']
+				if(goodslist[idx] && window.plus) {
+					mui.openWindow({
+						url: 'detail.html',
+						id: 'detail',
+
+						styles: {
+							popGesture: "close"
+						},
+						extras: {
+							goods: goodslist[idx]
+						}
+					})
+				} else {
+					plus.nativeUI.alert('出错了')
+				}
+
+			}
+
+			function del() {
+
+				plus.nativeUI.confirm('清除所有足迹！', function(e) {
+					console.log(e.index);
+					if(e.index == 0) {
+						plus.storage.removeItem("footprint")
+						getData()
+					}
+				}, '提示');
+
+			}
+
+			//返回顶部
+
+			function totopIn() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.remove('hide')
+				totopview.classList.add('fadeInUp', 'animated')
+				totopview.addEventListener('animationend', totopInCallBack)
+			};
+
+			function totopInCallBack() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.remove('fadeOutDown', 'animated')
+				totopview.removeEventListener('animationend', totopInCallBack)
+			}
+
+			function totopOut() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.add('fadeOutDown', 'animated')
+				totopview.addEventListener('animationend', totopOutCallBack)
+			};
+
+			function totopOutCallBack() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.remove('fadeOutDown', 'animated')
+				totopview.classList.add('hide')
+				totopview.removeEventListener('animationend', totopOutCallBack)
+			}
+
+			var totop = false;
+			var scrollTop = 0;
+			window.onscroll = function() {
+				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+				if(scrollTop > 1500 && !totop) {
+					totop = true;
+					totopIn()
+				} else if(scrollTop < 500 && totop) {
+					totop = false;
+					totopOut()
+				}
+			}
+
+			function scrolltotop() {
+				window.scrollTo({
+					top: 0,
+					behavior: "smooth"
+				})
+			}
+
+			//图片懒加载器
+			var myLazyLoad = new LazyLoad({
+				elements_selector: ".lazy"
+			});
+		</script>
+	</body>
+
+</html>

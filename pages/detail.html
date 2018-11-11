@@ -1,0 +1,472 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/animate.min.css" />
+		<link rel="stylesheet" href="../css/main.css" />
+
+	</head>
+
+	<body class="detail">
+		<header class="mui-bar mui-bar-nav" id='titlebar'>
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">详情</h1>
+			<!--暂不开发-->
+			<div class="detail-title-action-wrap" style="display: none;">
+				<span class="active">宝贝</span>
+				<span>详情</span>
+				<span>推荐</span>
+			</div>
+		</header>
+
+		<div style="margin-bottom: 50px;">
+			<!--商品详细信息-->
+			<div class="detail-wrap" id="detail-wrap">
+
+			</div>
+
+			<!--淘宝详情-->
+			<div class="tbdetail" id="tbdetail">
+
+			</div>
+
+			<!--猜你喜欢商品列表-->
+			<div class="similar" id="similar">
+
+			</div>
+
+		</div>
+
+		<!--返回顶部-->
+		<span class="totop hide mui-icon mui-icon mui-icon-arrowup" style="bottom: 80px;" id="totop" onclick="scrolltotop()"></span>
+
+		<!--商品详情模板-->
+		<script type="text/html" id='goodsTpl'>
+			<div class="mui-slider">
+				<div class="mui-slider-group" style="background-color: #f7f7f7;">
+					{{each goods.banner item idx}}
+					<div class="mui-slider-item">
+						<img class="itempic lazy" style="height: 400px;" data-src="{{item}}" />
+					</div>
+					{{/each}}
+				</div>
+			</div>
+
+			<div class="title-wrap">
+				<img class="shoptype" src="{{goods.shoptype==='B'?'../imgs/shoptype_b.png':'../imgs/shoptype_c.png'}}"></img>
+				<span class="title ">{{goods.itemtitle}}</span>
+			</div>
+
+			<div class="itemendprice-wrap">
+				<span class="itemendprice"><span class="label">券后价</span>￥{{goods.itemendprice}}</span>
+				<span class="itemsale">销量{{goods.itemsale}}</span>
+			</div>
+
+			<div class="itemprice-wrap">
+				<span class="itemprice">{{goods.shoptype==='b'?'天猫':'淘宝'}}价{{goods.itemprice}}</span>
+				<span class="activity_type">{{goods.activity_type}}</span>
+			</div>
+
+			<div class="quan-wrap" data-url="{{goods.couponurl}}" onclick="openTB(this)">
+				<div class="mui-row info-wrap">
+					<div class="mui-col-xs-8">
+						<span class="couponmoney">{{goods.couponmoney}}元优惠券</span>
+						<span class="couponendtime">有效期至：{{goods.couponendtime}}</span>
+					</div>
+					<div class="mui-col-xs-4">
+						立即领券
+					</div>
+				</div>
+				<img src="../imgs/goods_quan.png" />
+			</div>
+
+			<div class="desc">
+				{{goods.guide_article}}
+			</div>
+
+			<div class="bottom-wrap" style="z-index: 9;">
+				<img class="share" src="../imgs/share.png" onclick="shareTap()" />
+
+				<img class="collect" src="../imgs/collect.png" id="collect" onclick="collectTap()" />
+
+				<div style="flex-grow: 1;"></div>
+				<div class="price-wrap nocoupon" data-url="{{goods.couponurl}}" onclick="openTB(this)">
+					<span class="price">￥{{goods.itemprice}}</span>
+					<span>不领券</span>
+				</div>
+
+				<div class="price-wrap" data-url="{{goods.couponurl}}" onclick="openTB(this)">
+					<span class="price">￥{{goods.itemendprice}}</span>
+					<span>领券购买</span>
+				</div>
+			</div>
+		</script>
+
+		<!--淘宝详情模板-->
+		<script type="text/html" id='tbdetailTpl'>
+			<div class="part-title-wrap">
+				<div class="splite">
+					<span class="title">宝贝详情 </span>
+				</div>
+			</div>
+			{{each imgs item idx}}
+			<img class="lazy" style="width: 100%;" data-src="{{item}}_970x970q50s150.jpg{{tbimage_suffix}}" /> {{/each}}
+
+		</script>
+
+		<!--猜你喜欢商品列表模板-->
+		<script type="text/html" id='similarTpl'>
+			<div class="part-title-wrap">
+				<div class="splite">
+					<span class="title">猜你喜欢 </span>
+				</div>
+			</div>
+
+			{{each goodslist item idx}}
+			<div class="goods-item {{idx%2==1?'right':''}}" data-idx='{{idx}}' onclick="goodsTap(this)">
+				<img class="lazy" data-src="{{item.itempic}}_310x310.jpg" />
+				<span class="title mui-ellipsis">{{item.itemtitle}}</span>
+				<div class="price-wrap">
+					<div class="itemendprice">￥{{item.itemendprice}}</div>
+					<div class="itemprice">￥{{item.itemprice}}</div>
+					<div class="itemsale">销量{{item.itemsale}}</div>
+				</div>
+			</div>
+			{{/each}}
+		</script>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/zepto113.js"></script>
+		<script type="text/javascript" src="../js/api.js"></script>
+		<script type="text/javascript" src="../js/template-web.js"></script>
+		<script type="text/javascript" src="../js/lazyload.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var tbimage_suffix = ""
+			var goods = null
+			var share_pic_sd_path = ""
+			var itemid = ""
+			var favorite = {}
+			mui.plusReady(() => {
+
+				setTimeout(() => {
+					if(mui.os.android) {
+						tbimage_suffix = "_.webp";
+					}
+
+					let self = plus.webview.currentWebview();
+					itemid = self.itemid
+					if(itemid) {
+						getGoods(self.itemid)
+					} else {
+						goods = self.goods
+						itemid = goods.itemid
+						setdata()
+					}
+
+					//足迹
+					let footprint = {}
+					let storageFootprint = JSON.parse(plus.storage.getItem("footprint"))
+					if(storageFootprint) {
+						footprint = storageFootprint
+					}
+					footprint[itemid] = goods
+
+					plus.storage.setItem("footprint", JSON.stringify(footprint))
+
+					//读取收藏集合
+					let storageFavorite = JSON.parse(plus.storage.getItem("favorite"))
+					if(storageFavorite) {
+						favorite = storageFavorite
+						if(favorite[itemid]) {
+							$("img.collect").attr("src", "../imgs/collect_2.png")
+						}
+					}
+				}, 150)
+
+			})
+
+			function setdata() {
+				if(!goods) {
+					return
+				}
+
+				renderGoods(goods)
+				getGaoyongUrl(goods.itemid)
+				getTbdetail(goods.itemid)
+				getSimilar(goods.itemid)
+			}
+
+			//商品详情
+			function getGoods(itemid) {
+				api.getDetail(itemid, (res) => {
+					if(res.code == 1) {
+						goods = res.data
+						setdata()
+					}
+
+				})
+			}
+
+			function renderGoods(goods) {
+				if(goods["taobao_image"]) {
+					goods['banner'] = goods["taobao_image"].split(',')
+				} else {
+					goods['banner'] = goods["itempic"].split(',')
+				}
+				//格式化时间
+
+				if(goods.couponendtime) {
+					let date = new Date(goods.couponendtime * 1000)
+					goods.couponendtime = dateFtt("yyyy-MM-dd hh:mm:ss", date);
+				} else {
+					goods.couponendtime = "无限制"
+				}
+
+				var html = template('goodsTpl', {
+					goods: goods
+				})
+				$('.detail-wrap').html(html)
+
+				let banner = mui('.mui-slider');
+				banner.slider({
+					interval: 3000
+				})
+
+				if(myLazyLoad) {
+					myLazyLoad.update()
+				}
+			}
+
+			//扩展时间格式化
+			function dateFtt(fmt, date) { //author: meizz   
+				var o = {
+					"M+": date.getMonth() + 1, //月份   
+					"d+": date.getDate(), //日   
+					"h+": date.getHours(), //小时   
+					"m+": date.getMinutes(), //分   
+					"s+": date.getSeconds(), //秒   
+					"q+": Math.floor((date.getMonth() + 3) / 3), //季度   
+					"S": date.getMilliseconds() //毫秒   
+				};
+				if(/(y+)/.test(fmt))
+					fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+				for(var k in o)
+					if(new RegExp("(" + k + ")").test(fmt))
+						fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+				return fmt;
+			}
+
+			//扩展startWith方法
+			String.prototype.startWith = function(str) {
+				var reg = new RegExp("^" + str);
+				return reg.test(this);
+			}
+
+			//淘宝商品详情
+			function getTbdetail(itemid) {
+				api.getTbDetail(itemid, (res) => {
+
+					let str = JSON.stringify(res)
+					
+					//正则匹配所有图片
+					let pattern = /\/\/img\.alicdn.+?\.jpg/g
+					
+					//执行匹配提取
+					let imgs = str.match(pattern)
+					if(imgs) {
+						for(let i = 0; i < imgs.length; i++) {
+							if(imgs[i].startWith("//")) {
+								imgs[i] = "https:" + imgs[i]
+							}
+						}
+
+						var html = template('tbdetailTpl', {
+							imgs: imgs
+						})
+
+						$('#tbdetail').html(html)
+
+						if(myLazyLoad) {
+							myLazyLoad.update()
+						}
+					}
+
+				})
+
+			}
+
+			var similarlist = []
+
+			function getSimilar(itemid) {
+				api.getSimilar(itemid, (res) => {
+					if(res.code == 1) {
+						similarlist = res['data']
+						var html = template('similarTpl', {
+							goodslist: similarlist
+						})
+						$('#similar').html(html)
+
+						if(myLazyLoad) {
+							myLazyLoad.update()
+						}
+					}
+				})
+			}
+
+			function goodsTap(e) {
+				let idx = e.dataset['idx']
+				if(similarlist[idx] && window.plus) {
+					mui.openWindow({
+						url: 'detail.html',
+						id: 'detail' + similarlist[idx]["itemid"],
+						styles: {
+							popGesture: "close"
+						},
+						extras: {
+							goods: similarlist[idx]
+						}
+					})
+				} else {
+					plus.nativeUI.alert('出错了')
+				}
+
+			}
+
+			//获取高佣金链接
+			var coupon_click_url = ""
+
+			function getGaoyongUrl(itemid) {
+				api.getGaoyong(itemid, (res) => {
+
+					if(res.code == 1 && res.data["coupon_click_url"]) {
+						//						coupon_click_url = res.data["item_url"] ? res.data["item_url"] : res.data["coupon_click_url"]
+						coupon_click_url = res.data["coupon_click_url"]
+						goods["coupon_click_url"] = coupon_click_url
+
+					}
+				})
+
+			}
+
+			function openTB(e) {
+				if(!window.plus) {
+					return
+				}
+				let url = e.dataset.url
+				if(coupon_click_url) {
+					url = coupon_click_url
+				}
+
+				url = url.replace("https://", "taobao://")
+				console.log(url)
+				plus.nativeUI.confirm('将要前往手机淘宝！', function(e) {
+					if(e.index == 0) {
+						plus.runtime.openURL(url, function() {
+							plus.nativeUI.alert("打开淘宝失败：" + e.message)
+						})
+						plus.nativeUI.toast("正在启动手机淘宝..")
+					}
+				}, 'ヾ(●゜▽゜●)♡');
+
+			}
+
+			var scroll = mui('.mui-scroll-wrapper').scroll({
+				bounce: false
+			});
+
+			var alpha = 0
+
+			//返回顶部
+
+			function totopIn() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.remove('hide')
+				totopview.classList.add('fadeInUp', 'animated')
+				totopview.addEventListener('animationend', totopInCallBack)
+			};
+
+			function totopInCallBack() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.remove('fadeOutDown', 'animated')
+				totopview.removeEventListener('animationend', totopInCallBack)
+			}
+
+			function totopOut() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.add('fadeOutDown', 'animated')
+				totopview.addEventListener('animationend', totopOutCallBack)
+			};
+
+			function totopOutCallBack() {
+				var totopview = document.getElementById("totop")
+				totopview.classList.remove('fadeOutDown', 'animated')
+				totopview.classList.add('hide')
+				totopview.removeEventListener('animationend', totopOutCallBack)
+			}
+
+			var totop = false;
+			var scrollTop = 0;
+			window.onscroll = function() {
+				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+				if(scrollTop > 1500 && !totop) {
+					totop = true;
+					totopIn()
+				} else if(scrollTop < 500 && totop) {
+					totop = false;
+					totopOut()
+				}
+				//
+				//				var alpha = Math.abs(scrollTop) / 100
+				//				if(alpha > 1) {
+				//					alpha = 1
+				//				}
+				//				$('#titlebar').css('background-color', 'rgba(254,65,63,' + alpha + ')')
+			}
+
+			function scrolltotop() {
+				window.scrollTo({
+					top: 0,
+					behavior: "smooth"
+				})
+			}
+
+			//跳转到分享页面
+			function shareTap() {
+				mui.openWindow({
+					url: "share.html",
+					show: {
+						aniShow: "slide-in-bottom"
+					},
+					extras: {
+						goods: goods
+					}
+				})
+			}
+
+			//收藏/取消收藏
+			function collectTap() {
+				if($("img.collect").attr("src") == "../imgs/collect.png") {
+					$("img.collect").attr("src", "../imgs/collect_2.png")
+					plus.nativeUI.toast("收藏成功")
+					favorite[itemid] = goods
+				} else {
+					$("img.collect").attr("src", "../imgs/collect.png")
+					plus.nativeUI.toast("取消收藏")
+					delete favorite[itemid]
+				}
+				plus.storage.setItem("favorite", JSON.stringify(favorite))
+			}
+
+			//图片懒加载器
+			var myLazyLoad = new LazyLoad({
+				elements_selector: ".lazy"
+			});
+		</script>
+	</body>
+
+</html>
