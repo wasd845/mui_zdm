@@ -31,7 +31,7 @@ var api = {
 	//商品列表
 	getCategoryGoods: function(params, callback) {
 		let url = Host + "/itemlist/apikey/zhangdama/back/{back}/min_id/{min_id}/cid/{cid}"
-		if(params['keyword']) {
+		if (params['keyword']) {
 			url = Host + "/get_keyword_items/apikey/zhangdama/back/{back}/min_id/{min_id}/cid/{cid}/keyword/{keyword}"
 		}
 		url = url.Format(params)
@@ -52,14 +52,15 @@ var api = {
 	},
 
 	//淘宝详情
-//	getTbDetail: function(itemid, callback) {
-//		let url = "https://hws.m.taobao.com/cache/mtop.wdetail.getItemDescx/4.9/?data={item_num_id:%22ITEMID%22}&type=json"
-//		url = url.replace("ITEMID", itemid)
-//		getJSON(url, callback)
-//	},
+	//	getTbDetail: function(itemid, callback) {
+	//		let url = "https://hws.m.taobao.com/cache/mtop.wdetail.getItemDescx/4.9/?data={item_num_id:%22ITEMID%22}&type=json"
+	//		url = url.replace("ITEMID", itemid)
+	//		getJSON(url, callback)
+	//	},
 
 	getTbDetail: function(itemid, callback) {
-		let url = "http://h5api.m.taobao.com/h5/mtop.taobao.detail.getdesc/6.0/?data={id:%22ITEMID%22}&tdsourcetag=s_pctim_aiomsg&qq-pf-to=pcqq.group"
+		let url =
+			"http://h5api.m.taobao.com/h5/mtop.taobao.detail.getdesc/6.0/?data={id:%22ITEMID%22}&tdsourcetag=s_pctim_aiomsg&qq-pf-to=pcqq.group"
 		url = url.replace("ITEMID", itemid)
 		getJSON(url, callback)
 	},
@@ -75,7 +76,8 @@ var api = {
 		let params = {
 			itemid: itemid,
 			pid: "mm_120569105_41910684_193288206",
-			apikey: "zhangdama"
+			apikey: "zhangdama",
+			tb_name: "yaoji9010000"
 		}
 		let url = Host + "/ratesurl"
 		postRequest(url, params, callback)
@@ -125,32 +127,33 @@ var api = {
 	},
 	//生成淘口令
 	getTkl: function(quanUrl, callback) {
-		let url = "http://45.78.20.252:8080/mktkl"
+		let url = "http://zxt.zdm100.com/mktkl"
 		postRequest(url, {
 			quanUrl: quanUrl
 		}, callback, "")
 	},
 	//短网址
 	getShortUrl(longUrl, callback) {
-		let apiUrl = "http://dwz.cn/admin/create"
+		let apiUrl = "https://dwz.cn/admin/v2/create"
 		postRequest(apiUrl, {
-			url: longUrl
-		}, callback,"application/json")
+			url: longUrl,
+			header_token: "9dcf8bf0a62c63928cdaa1006fd58592"
+		}, callback, "application/json; charset=UTF-8")
 	},
 	//九块九
-	getNineGoods(min_id,callback){
-		let url="http://v2.api.haodanku.com/column/apikey/zhangdama/type/2/back/50/min_id/"+min_id
-		getJSON(url,callback)
+	getNineGoods(min_id, callback) {
+		let url = "http://v2.api.haodanku.com/column/apikey/zhangdama/type/2/back/50/min_id/" + min_id
+		getJSON(url, callback)
 	},
 	//聚划算
-	getJuGoods(min_id,callback){
-		let url="http://v2.api.haodanku.com/column/apikey/zhangdama/type/4/back/50/min_id/"+min_id
-		getJSON(url,callback)
+	getJuGoods(min_id, callback) {
+		let url = "http://v2.api.haodanku.com/column/apikey/zhangdama/type/4/back/50/min_id/" + min_id
+		getJSON(url, callback)
 	},
 	//专题商品列表
-	getSubjectGoods(sid,callback){
-		let url="http://v2.api.haodanku.com/get_subject_item/apikey/zhangdama/id/"+sid
-		getJSON(url,callback)
+	getSubjectGoods(sid, callback) {
+		let url = "http://v2.api.haodanku.com/get_subject_item/apikey/zhangdama/id/" + sid
+		getJSON(url, callback)
 	}
 
 }
@@ -169,7 +172,7 @@ String.prototype.Format = function(args) {
 };
 
 function getJSON(url, callback) {
-	if(window.plus) {
+	if (window.plus) {
 		plus.nativeUI.showWaiting()
 	}
 	mui.ajax(url, {
@@ -179,7 +182,7 @@ function getJSON(url, callback) {
 		success: function(data) {
 			callback(data)
 
-			if(window.plus) {
+			if (window.plus) {
 				plus.nativeUI.closeWaiting()
 			}
 		},
@@ -188,7 +191,7 @@ function getJSON(url, callback) {
 				code: -1
 			})
 
-			if(window.plus) {
+			if (window.plus) {
 				plus.nativeUI.closeWaiting()
 			}
 		}
@@ -196,12 +199,18 @@ function getJSON(url, callback) {
 }
 
 function postRequest(url, params, callback, contentType) {
+	var header = {}
+	if (params["header_token"]) {
+		header["Token"] = params["header_token"]
+		delete params["header_token"]
+	}
 
 	mui.ajax(url, {
 		type: "post",
 		dataType: 'json',
 		data: params,
 		timeout: 5000,
+		headers: header || {},
 		contentType: contentType || 'application/x-www-form-urlencoded',
 		success: function(data) {
 			callback(data)

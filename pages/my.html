@@ -69,6 +69,10 @@
 			mui.init()
 
 			mui.plusReady(() => {
+				plus.webview.currentWebview().setStyle({
+					scrollIndicator: 'none'
+				});
+				
 				if(plus.os.name == "iOS") {
 					$("#checkUpdate").css("display", "none")
 				}

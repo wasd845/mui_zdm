@@ -155,7 +155,17 @@
 			})
 
 			mui.plusReady(() => {
+
+				plus.webview.currentWebview().setStyle({
+					scrollIndicator: 'none'
+				});
+
 				getHostKey()
+
+				setTimeout(() => {
+					plus.navigator.closeSplashscreen();
+				},2000)
+
 			})
 
 			var currTab = 0;

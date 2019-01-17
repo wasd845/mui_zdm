@@ -159,6 +159,10 @@
 			}
 
 			mui.plusReady(() => {
+				plus.webview.currentWebview().setStyle({
+					scrollIndicator: 'none'
+				});
+				
 				var html = template('tabTpl', {
 					hourMap: hourMap,
 				})
