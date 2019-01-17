@@ -41,7 +41,7 @@
 		<!--商品列表模板-->
 		<script type="text/html" id='goodsTpl'>
 			{{each goodslist item idx}}
-			<div class="goods-item {{idx%2==1?'right':''}}" data-idx='{{(min_id-1)*50+idx}}' onclick="goodsTap(this)">
+			<div class="goods-item {{idx%2==1?'right':''}}" data-idx='{{(pageIdx-1)*50+idx}}' onclick="goodsTap(this)">
 				<img class="lazy" data-src="{{item.itempic}}_310x310.jpg" />
 				<span class="title mui-ellipsis">{{item.itemtitle}}</span>
 				<div class="price-wrap">
@@ -95,7 +95,7 @@
 			var nomore = false;
 			var min_id = 1;
 			var goodslist = []
-
+			var pageIdx=1
 			function getGoods() {
 				api.getNineGoods(min_id, (res) => {
 					if(res.code == 1) {
@@ -104,6 +104,9 @@
 						nomore = list.length < pageCount
 						if(min_id == 1) {
 							goodslist = []
+							pageIdx=1
+						}else{
+							pageIdx++
 						}
 
 						//仅用于缓存(点击跳转详情)
@@ -111,13 +114,13 @@
 
 						var html = template('goodsTpl', {
 							goodslist: list,
-							min_id: min_id
+							pageIdx: pageIdx
 						})
 
-						if(min_id == 1) {
+						if(pageIdx == 1) {
 							$('#listview').html(html)
 
-						} else if(min_id > 1 && list.length > 0) {
+						} else if(pageIdx > 1 && list.length > 0) {
 
 							$('#listview').append(html)
 
@@ -130,7 +133,7 @@
 
 				})
 
-				if(min_id == 1 && mui('#pullrefresh').pullRefresh()) {
+				if(pageIdx == 1 && mui('#pullrefresh').pullRefresh()) {
 					mui('#pullrefresh').pullRefresh().endPulldown();
 				}
 				if(mui('#pullrefresh').pullRefresh()) {

@@ -363,7 +363,7 @@
 				}
 
 				url = url.replace("https://", "taobao://")
-				console.log(url)
+				
 				plus.nativeUI.confirm('将要前往手机淘宝！', function(e) {
 					if(e.index == 0) {
 						plus.runtime.openURL(url, function() {

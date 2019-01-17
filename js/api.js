@@ -17,7 +17,6 @@ var api = {
 	getGoods: function(params, callback) {
 		let url = Host + "/itemlist/apikey/zhangdama/nav/{nav}/cid/{cid}/back/{back}/min_id/{min_id}"
 		url = url.Format(params)
-		console.log(url)
 		getJSON(url, callback)
 	},
 

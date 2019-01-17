@@ -49,7 +49,7 @@
 		<!--商品列表模板-->
 		<script type="text/html" id='goodsTpl'>
 			{{each goodslist item idx}}
-			<div class="goods-item {{idx%2==1?'right':''}}" data-idx='{{(min_id-1)*50+idx}}' onclick="goodsTap(this)">
+			<div class="goods-item {{idx%2==1?'right':''}}" data-idx='{{(pageIdx-1)*50+idx}}' onclick="goodsTap(this)">
 				<img class="lazy" data-src="{{item.itempic}}_310x310.jpg" />
 				<span class="title mui-ellipsis">{{item.itemtitle}}</span>
 				<div class="price-wrap">
@@ -159,7 +159,7 @@
 			var nomore = false;
 			var pageCount = 50;
 			var goodslist = []
-
+			var pageIdx=1
 			function search() {
 				let kw = $(".kw").val()
 				let params = {
@@ -175,22 +175,23 @@
 						let list = res['data']
 						nomore = list.length < pageCount
 
-						//仅用于缓存(点击跳转详情)
 						if(min_id == 1) {
-							goodslist = list;
-						} else {
-							goodslist = goodslist.concat(list)
+							goodslist = []
+							pageIdx=1
+						}else{
+							pageIdx++
 						}
+						goodslist = goodslist.concat(list)
 
 						var html = template('goodsTpl', {
 							goodslist: list,
-							min_id: min_id
+							pageIdx: pageIdx
 						})
 
-						if(min_id == 1) {
+						if(pageIdx == 1) {
 							$('#listview').html(html)
 
-						} else if(min_id > 1 && list.length > 0) {
+						} else if(pageIdx > 1 && list.length > 0) {
 
 							$('#listview').append(html)
 
@@ -204,7 +205,7 @@
 
 				})
 
-				if(min_id == 1 && mui('#listview').pullRefresh()) {
+				if(pageIdx == 1 && mui('#listview').pullRefresh()) {
 					mui('#listview').pullRefresh().endPulldown();
 				}
 				if(mui('#listview').pullRefresh()) {
