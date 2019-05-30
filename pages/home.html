@@ -92,7 +92,7 @@
 				<div class="mui-slider-group">
 					{{each bannerlist item idx}}
 					<div class="mui-slider-item" onclick="tosubject({{idx}})">
-						<img class="lazy" data-src="http://img.haodanku.com/{{item.app_image}}" />
+						 <img src="http://img.haodanku.com/{{item.app_image}}" />
 					</div>
 					{{/each}}
 				</div>
@@ -133,11 +133,11 @@
 							min_id = 1;
 							getGoods();
 
-							if(catelist.length == 0) {
+							if (catelist.length == 0) {
 								getCategory()
 							}
 
-							if(subgect.length == 0) {
+							if (subgect.length == 0) {
 								getSubject()
 							}
 						}
@@ -164,7 +164,7 @@
 
 				setTimeout(() => {
 					plus.navigator.closeSplashscreen();
-				},2000)
+				}, 2000)
 
 			})
 
@@ -174,7 +174,7 @@
 			//分类接口
 			function getCategory() {
 				api.getCategory((res) => {
-					if(res.code == 1) {
+					if (res.code == 1) {
 						catelist = res['general_classify'];
 						//分类数据缓存到本地
 						plus.storage.setItem("general_classify", JSON.stringify(catelist))
@@ -219,7 +219,7 @@
 
 			function getSubject() {
 				api.getSubject((res) => {
-					if(res.code == 1) {
+					if (res.code == 1) {
 						subgect = res.data
 						var html = template('bannerTpl', {
 							bannerlist: subgect
@@ -230,15 +230,13 @@
 						banner.slider({
 							interval: 3000
 						})
-
-						myLazyLoad.update()
 					}
 				})
 			}
 
 			function tosubject(idx) {
-				let item = subgect[idx]
-				if(item) {
+				var item = subgect[idx]
+				if (item) {
 					mui.openWindow({
 						url: "subject.html",
 						name: "subject",
@@ -256,27 +254,28 @@
 			var nomore = false;
 			var min_id = 1; //页码（默认1 后续接口返回）
 			var goodslist = []
-			var pageIdx=1
+			var pageIdx = 1
+
 			function getGoods() {
-				let params = {
+				var params = {
 					nav: 1,
 					cid: 0,
 					back: pageCount,
 					min_id: min_id
 				}
-				if(catelist && catelist[currTab]) {
+				if (catelist && catelist[currTab]) {
 					params["cid"] = catelist[currTab]["cid"]
 				}
 
 				api.getGoods(params, (res) => {
-					if(res.code == 1) {
+					if (res.code == 1) {
 
-						let list = res['data']
+						var list = res['data']
 						nomore = list.length < pageCount
-						if(min_id == 1) {
+						if (min_id == 1) {
 							goodslist = []
-							pageIdx=1
-						}else{
+							pageIdx = 1
+						} else {
 							pageIdx++
 						}
 
@@ -288,9 +287,9 @@
 							pageIdx: pageIdx
 						})
 
-						if(pageIdx == 1) {
+						if (pageIdx == 1) {
 							$('#listview').html(html)
-						} else if(pageIdx > 1 && list.length > 0) {
+						} else if (pageIdx > 1 && list.length > 0) {
 							$('#listview').append(html)
 						}
 
@@ -301,17 +300,17 @@
 
 				})
 
-				if(pageIdx == 1 && mui('#pullrefresh').pullRefresh()) {
+				if (pageIdx == 1 && mui('#pullrefresh').pullRefresh()) {
 					mui('#pullrefresh').pullRefresh().endPulldown();
 				}
-				if(mui('#pullrefresh').pullRefresh()) {
+				if (mui('#pullrefresh').pullRefresh()) {
 					mui('#pullrefresh').pullRefresh().endPullupToRefresh(nomore);
 				}
 			}
 
 			function goodsTap(e) {
-				let idx = e.dataset['idx']
-				if(goodslist[idx] && window.plus) {
+				var idx = e.dataset['idx']
+				if (goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',
 						id: 'detail',
@@ -331,15 +330,15 @@
 
 			//搜索关键词
 			function getHostKey() {
-				if(!window.plus) {
+				if (!window.plus) {
 					return
 				}
 
 				api.getHotkey((res) => {
-					if(res.code == 1) {
-						let hotkey = res.data;
+					if (res.code == 1) {
+						var hotkey = res.data;
 
-						if(hotkey) {
+						if (hotkey) {
 							console.log(hotkey[0]["keyword"])
 							$(".kw")[0].innerHTML = hotkey[0]["keyword"]
 							plus.storage.setItem("hotkey", JSON.stringify(hotkey))
@@ -393,10 +392,10 @@
 			var scrollTop = 0;
 			window.onscroll = function() {
 				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-				if(scrollTop > 1500 && !totop) {
+				if (scrollTop > 1500 && !totop) {
 					totop = true;
 					totopIn()
-				} else if(scrollTop < 500 && totop) {
+				} else if (scrollTop < 500 && totop) {
 					totop = false;
 					totopOut()
 				}
@@ -417,7 +416,7 @@
 			//快捷入口
 			function channelTap(channelIdx) {
 
-				switch(channelIdx) {
+				switch (channelIdx) {
 					case 1:
 						mui.openWindow({
 							url: 'top100.html',
@@ -437,8 +436,8 @@
 						})
 						break;
 					case 3:
-						let mainPageId = plus.storage.getItem('MainPageID');
-						let mainPage = plus.webview.getWebviewById(mainPageId);
+						var mainPageId = plus.storage.getItem('MainPageID');
+						var mainPage = plus.webview.getWebviewById(mainPageId);
 						mui.fire(mainPage, 'toDDQ');
 						break;
 					case 4:

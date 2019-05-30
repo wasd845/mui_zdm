@@ -78,7 +78,7 @@
 						offset: '50px', //可选 默认0px,下拉刷新控件的起始位置
 						auto: false, //可选,默认false.首次加载自动上拉刷新一次
 						callback: function() { //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-							let hotkey_display = $("#hotkey-wrap").css("display")
+							var hotkey_display = $("#hotkey-wrap").css("display")
 							if(hotkey_display == "block") {
 								mui('#listview').pullRefresh().endPulldown();
 								return
@@ -95,7 +95,7 @@
 						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
 						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
 						callback: function() { //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-							let hotkey_display = $("#hotkey-wrap").css("display")
+							var hotkey_display = $("#hotkey-wrap").css("display")
 							if(hotkey_display == "block") {
 								return
 							}
@@ -104,7 +104,7 @@
 					}
 				},
 				beforeback: function() {
-					let hotkey_display = $("#hotkey-wrap").css("display")
+					var hotkey_display = $("#hotkey-wrap").css("display")
 					if(hotkey_display == "none") {
 						$("#hotkey-wrap").css("display", "block")
 						$("#result-wrap").css("display", "none")
@@ -120,7 +120,7 @@
 				hotkey = JSON.parse(plus.storage.getItem("hotkey"))
 				$(".kw").val(hotkey[0]["keyword"])
 
-				let html = template('hotkeyTpl', {
+				var html = template('hotkeyTpl', {
 					hotkey: hotkey.slice(0, 20),
 				})
 				$("#hotkey-wrap").html(html)
@@ -130,7 +130,7 @@
 			function doSearch() {
 				$("#hotkey-wrap").css("display", "none")
 				$("#result-wrap").css("display", "block")
-				let kw = $(".kw").val()
+				var kw = $(".kw").val()
 				if(!kw) {
 					plus.nativeUI.toast("请输入关键词")
 					return
@@ -161,8 +161,8 @@
 			var goodslist = []
 			var pageIdx=1
 			function search() {
-				let kw = $(".kw").val()
-				let params = {
+				var kw = $(".kw").val()
+				var params = {
 					keyword: kw,
 					back: pageCount,
 					min_id: min_id,
@@ -172,7 +172,7 @@
 				api.superSearch(params, (res) => {
 					if(res.code == 1) {
 
-						let list = res['data']
+						var list = res['data']
 						nomore = list.length < pageCount
 
 						if(min_id == 1) {
@@ -224,7 +224,7 @@
 
 			//跳转到商品详情
 			function goodsTap(e) {
-				let idx = e.dataset['idx']
+				var idx = e.dataset['idx']
 				if(goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',

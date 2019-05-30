@@ -92,7 +92,7 @@
 				api.getSubjectGoods(sid, (res) => {
 					if(res.code == 1) {
 
-						let list = res['data']
+						var list = res['data']
 						//仅用于缓存(点击跳转详情)
 						goodslist = list
 

@@ -96,7 +96,7 @@
 			var cate_son_idx = "";
 			mui.plusReady(() => {
 
-				let self = plus.webview.currentWebview()
+				var self = plus.webview.currentWebview()
 				//一级分类idx
 				cate_idx = self.cateidx
 
@@ -193,7 +193,7 @@
 			var goodslist = []
 			var pageIdx=1
 			function getGoods() {
-				let params = {
+				var params = {
 					cid: cid,
 					back: pageCount,
 					min_id: min_id
@@ -205,7 +205,7 @@
 				api.getCategoryGoods(params, (res) => {
 					if(res.code == 1) {
 
-						let list = res['data']
+						var list = res['data']
 						nomore = list.length < pageCount
 						if(min_id == 1) {
 							goodslist = []
@@ -247,7 +247,7 @@
 			}
 
 			function goodsTap(e) {
-				let idx = e.dataset['idx']
+				var idx = e.dataset['idx']
 				if(goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',

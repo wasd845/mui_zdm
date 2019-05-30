@@ -77,7 +77,7 @@
 				api.getTopGoods((res) => {
 					if(res.code == 1) {
 
-						let list = res['data']
+						var list = res['data']
 						//仅用于缓存(点击跳转详情)
 						goodslist = list
 
@@ -98,7 +98,7 @@
 			}
 
 			function goodsTap(e) {
-				let idx = e.dataset['idx']
+				var idx = e.dataset['idx']
 				if(goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',

@@ -158,7 +158,7 @@
 						tbimage_suffix = "_.webp";
 					}
 
-					let self = plus.webview.currentWebview();
+					var self = plus.webview.currentWebview();
 					itemid = self.itemid
 					if(itemid) {
 						getGoods(self.itemid)
@@ -169,8 +169,8 @@
 					}
 
 					//足迹
-					let footprint = {}
-					let storageFootprint = JSON.parse(plus.storage.getItem("footprint"))
+					var footprint = {}
+					var storageFootprint = JSON.parse(plus.storage.getItem("footprint"))
 					if(storageFootprint) {
 						footprint = storageFootprint
 					}
@@ -179,7 +179,7 @@
 					plus.storage.setItem("footprint", JSON.stringify(footprint))
 
 					//读取收藏集合
-					let storageFavorite = JSON.parse(plus.storage.getItem("favorite"))
+					var storageFavorite = JSON.parse(plus.storage.getItem("favorite"))
 					if(storageFavorite) {
 						favorite = storageFavorite
 						if(favorite[itemid]) {
@@ -221,7 +221,7 @@
 				//格式化时间
 
 				if(goods.couponendtime) {
-					let date = new Date(goods.couponendtime * 1000)
+					var date = new Date(goods.couponendtime * 1000)
 					goods.couponendtime = dateFtt("yyyy-MM-dd hh:mm:ss", date);
 				} else {
 					goods.couponendtime = "无限制"
@@ -232,7 +232,7 @@
 				})
 				$('.detail-wrap').html(html)
 
-				let banner = mui('.mui-slider');
+				var banner = mui('.mui-slider');
 				banner.slider({
 					interval: 3000
 				})
@@ -271,15 +271,15 @@
 			function getTbdetail(itemid) {
 				api.getTbDetail(itemid, (res) => {
 
-					let str = JSON.stringify(res)
+					var str = JSON.stringify(res)
 					
 					//正则匹配所有图片
-					let pattern = /\/\/img\.alicdn.+?\.jpg/g
+					var pattern = /\/\/img\.alicdn.+?\.jpg/g
 					
 					//执行匹配提取
-					let imgs = str.match(pattern)
+					var imgs = str.match(pattern)
 					if(imgs) {
-						for(let i = 0; i < imgs.length; i++) {
+						for(var i = 0; i < imgs.length; i++) {
 							if(imgs[i].startWith("//")) {
 								imgs[i] = "https:" + imgs[i]
 							}
@@ -319,7 +319,7 @@
 			}
 
 			function goodsTap(e) {
-				let idx = e.dataset['idx']
+				var idx = e.dataset['idx']
 				if(similarlist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',
@@ -357,7 +357,7 @@
 				if(!window.plus) {
 					return
 				}
-				let url = e.dataset.url
+				var url = e.dataset.url
 				if(coupon_click_url) {
 					url = coupon_click_url
 				}

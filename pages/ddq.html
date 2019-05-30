@@ -184,7 +184,7 @@
 			//页面展示的时候开始初始化数据和渲染界面
 			window.addEventListener("show", function() {
 				var h = new Date().getHours();
-				let hour_type = -1;
+				var hour_type = -1;
 				if(h < 10) {
 					hour_type = 6
 				} else if(h < 15) {
@@ -219,11 +219,11 @@
 			} //切换时间段
 			function tabTap(clickedIndex) {
 
-				let slide = mySwiper.slides[clickedIndex]
+				var slide = mySwiper.slides[clickedIndex]
 
-				let slideLeft = slide.offsetLeft
-				let slideWidth = slide.clientWidth
-				let slideCenter = slideLeft + slideWidth / 2
+				var slideLeft = slide.offsetLeft
+				var slideWidth = slide.clientWidth
+				var slideCenter = slideLeft + slideWidth / 2
 
 				mySwiper.setTransition(500)
 				if(slideCenter < swiperWidth / 2) {
@@ -244,7 +244,7 @@
 
 			//商品列表
 			var hourType = 1;
-			let goodslist = []
+			var goodslist = []
 
 			function getGoods() {
 				window.scrollTo({

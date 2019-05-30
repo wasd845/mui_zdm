@@ -100,7 +100,7 @@
 				api.getNineGoods(min_id, (res) => {
 					if(res.code == 1) {
 
-						let list = res['data']
+						var list = res['data']
 						nomore = list.length < pageCount
 						if(min_id == 1) {
 							goodslist = []
@@ -142,7 +142,7 @@
 			}
 
 			function goodsTap(e) {
-				let idx = e.dataset['idx']
+				var idx = e.dataset['idx']
 				if(goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',

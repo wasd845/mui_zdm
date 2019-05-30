@@ -1,4 +1,4 @@
-const Host = "http://v2.api.haodanku.com"
+var Host = "http://v2.api.haodanku.com"
 var api = {
 
 	//全部分类
@@ -8,28 +8,28 @@ var api = {
 
 	//热搜关键词
 	getHotkey: function(callback) {
-		let url = Host + "/hot_key/apikey/zhangdama"
+		var url = Host + "/hot_key/apikey/zhangdama"
 		console.log(url)
 		getJSON(url, callback)
 	},
 
 	//商品列表
 	getGoods: function(params, callback) {
-		let url = Host + "/itemlist/apikey/zhangdama/nav/{nav}/cid/{cid}/back/{back}/min_id/{min_id}"
+		var url = Host + "/itemlist/apikey/zhangdama/nav/{nav}/cid/{cid}/back/{back}/min_id/{min_id}"
 		url = url.Format(params)
 		getJSON(url, callback)
 	},
 
 	//top100
 	getTopGoods: function(callback) {
-		let url = Host + "/itemlist/apikey/zhangdama/sort/11/cid/0/back/100/min_id/1"
+		var url = Host + "/itemlist/apikey/zhangdama/sort/11/cid/0/back/100/min_id/1"
 		console.log(url)
 		getJSON(url, callback)
 	},
 
 	//商品列表
 	getCategoryGoods: function(params, callback) {
-		let url = Host + "/itemlist/apikey/zhangdama/back/{back}/min_id/{min_id}/cid/{cid}"
+		var url = Host + "/itemlist/apikey/zhangdama/back/{back}/min_id/{min_id}/cid/{cid}"
 		if (params['keyword']) {
 			url = Host + "/get_keyword_items/apikey/zhangdama/back/{back}/min_id/{min_id}/cid/{cid}/keyword/{keyword}"
 		}
@@ -40,25 +40,25 @@ var api = {
 
 	//专题列表（用于首页banner）
 	getSubject: function(callback) {
-		let url = Host + "/get_subject/apikey/zhangdama"
+		var url = Host + "/get_subject/apikey/zhangdama"
 		getJSON(url, callback)
 	},
 
 	//商品详情
 	getDetail: function(itemid, callback) {
-		let url = Host + "/item_detail/apikey/zhangdama/itemid/" + itemid
+		var url = Host + "/item_detail/apikey/zhangdama/itemid/" + itemid
 		getJSON(url, callback)
 	},
 
 	//淘宝详情
 	//	getTbDetail: function(itemid, callback) {
-	//		let url = "https://hws.m.taobao.com/cache/mtop.wdetail.getItemDescx/4.9/?data={item_num_id:%22ITEMID%22}&type=json"
+	//		var url = "https://hws.m.taobao.com/cache/mtop.wdetail.getItemDescx/4.9/?data={item_num_id:%22ITEMID%22}&type=json"
 	//		url = url.replace("ITEMID", itemid)
 	//		getJSON(url, callback)
 	//	},
 
 	getTbDetail: function(itemid, callback) {
-		let url =
+		var url =
 			"http://h5api.m.taobao.com/h5/mtop.taobao.detail.getdesc/6.0/?data={id:%22ITEMID%22}&tdsourcetag=s_pctim_aiomsg&qq-pf-to=pcqq.group"
 		url = url.replace("ITEMID", itemid)
 		getJSON(url, callback)
@@ -66,19 +66,19 @@ var api = {
 
 	//猜你喜欢（用于详情）
 	getSimilar: function(itemid, callback) {
-		let url = Host + "/get_similar_info/apikey/zhangdama/itemid/" + itemid
+		var url = Host + "/get_similar_info/apikey/zhangdama/itemid/" + itemid
 		getJSON(url, callback)
 	},
 
 	//生成高佣链接
 	getGaoyong: function(itemid, callback) {
-		let params = {
+		var params = {
 			itemid: itemid,
 			pid: "mm_120569105_41910684_193288206",
 			apikey: "zhangdama",
 			tb_name: "yaoji9010000"
 		}
-		let url = Host + "/ratesurl"
+		var url = Host + "/ratesurl"
 		postRequest(url, params, callback)
 	},
 
@@ -86,27 +86,27 @@ var api = {
 	//min_id
 	//tb_p 第一次为1 后续来源于上次获取后的数据的tb_p值
 	superSearch: function(params, callback) {
-		let url = Host + "/supersearch/apikey/zhangdama/keyword/{keyword}/back/{back}/min_id/{min_id}/tb_p/{tb_p}"
+		var url = Host + "/supersearch/apikey/zhangdama/keyword/{keyword}/back/{back}/min_id/{min_id}/tb_p/{tb_p}"
 		url = url.Format(params)
 		getJSON(url, callback)
 	},
 
 	//达人说
 	getTalent: function(callback) {
-		let url = Host + "/talent_info/apikey/zhangdama"
+		var url = Host + "/talent_info/apikey/zhangdama"
 		getJSON(url, callback)
 	},
 
 	//达人说 文章
 	getTalentArt: function(id, callback) {
-		let url = Host + "/talent_article/apikey/zhangdama/id/" + id
+		var url = Host + "/talent_article/apikey/zhangdama/id/" + id
 		console.log(url)
 		getJSON(url, callback)
 	},
 
 	//筛选商品接口
 	getColumn: function(params, callback) {
-		let url = Host + "/column/apikey/zhangdama/type/{type}/back/{back}/min_id/{min_id}"
+		var url = Host + "/column/apikey/zhangdama/type/{type}/back/{back}/min_id/{min_id}"
 		url = url.Format(params)
 		console.log(url)
 		getJSON(url, callback)
@@ -114,26 +114,26 @@ var api = {
 
 	//top100
 	getTop100: function(callback) {
-		let url = Host + "/itemlist/apikey/zhangdama/nav/3/cid/0/back/100/min_id/1/sort/9"
+		var url = Host + "/itemlist/apikey/zhangdama/nav/3/cid/0/back/100/min_id/1/sort/9"
 		console.log(url)
 		getJSON(url, callback)
 	},
 	//快抢商品
 	getFastbuy: function(hour, callback) {
-		let url = "http://v2.api.haodanku.com/fastbuy/apikey/zhangdama/hour_type/" + hour + "/min_id/1"
+		var url = "http://v2.api.haodanku.com/fastbuy/apikey/zhangdama/hour_type/" + hour + "/min_id/1"
 		console.log(url)
 		getJSON(url, callback)
 	},
 	//生成淘口令
 	getTkl: function(quanUrl, callback) {
-		let url = "http://zxt.zdm100.com/mktkl"
+		var url = "http://zxt.zdm100.com/mktkl"
 		postRequest(url, {
 			quanUrl: quanUrl
 		}, callback, "")
 	},
 	//短网址
 	getShortUrl(longUrl, callback) {
-		let apiUrl = "https://dwz.cn/admin/v2/create"
+		var apiUrl = "https://dwz.cn/admin/v2/create"
 		postRequest(apiUrl, {
 			url: longUrl,
 			header_token: "9dcf8bf0a62c63928cdaa1006fd58592"
@@ -141,17 +141,17 @@ var api = {
 	},
 	//九块九
 	getNineGoods(min_id, callback) {
-		let url = "http://v2.api.haodanku.com/column/apikey/zhangdama/type/2/back/50/min_id/" + min_id
+		var url = "http://v2.api.haodanku.com/column/apikey/zhangdama/type/2/back/50/min_id/" + min_id
 		getJSON(url, callback)
 	},
 	//聚划算
 	getJuGoods(min_id, callback) {
-		let url = "http://v2.api.haodanku.com/column/apikey/zhangdama/type/4/back/50/min_id/" + min_id
+		var url = "http://v2.api.haodanku.com/column/apikey/zhangdama/type/4/back/50/min_id/" + min_id
 		getJSON(url, callback)
 	},
 	//专题商品列表
 	getSubjectGoods(sid, callback) {
-		let url = "http://v2.api.haodanku.com/get_subject_item/apikey/zhangdama/id/" + sid
+		var url = "http://v2.api.haodanku.com/get_subject_item/apikey/zhangdama/id/" + sid
 		getJSON(url, callback)
 	}
 

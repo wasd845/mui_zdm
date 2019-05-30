@@ -68,8 +68,8 @@
 			 * article样式有问题 暂停开发
 			 */
 			mui.plusReady(() => {
-				let self = plus.webview.currentWebview()
-				let id = self.aid
+				var self = plus.webview.currentWebview()
+				var id = self.aid
 				if(!id) {
 					return
 				}

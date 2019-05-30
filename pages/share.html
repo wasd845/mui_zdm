@@ -55,7 +55,7 @@
 			mui.init()
 
 			mui.plusReady(() => {
-				let self = plus.webview.currentWebview();
+				var self = plus.webview.currentWebview();
 				goods = self.goods
 				setData()
 				getData()
@@ -116,14 +116,14 @@
 
 			function setData() {
 				plus.nativeUI.closeWaiting()
-				let html = template.render(shareTpl, {
+				var html = template.render(shareTpl, {
 					goods: goods
 				})
 				$("textarea").html(html)
 			}
 
 			function copy() {
-				let shareStr = $("textarea").html()
+				var shareStr = $("textarea").html()
 				if(goods.tkl && goods.ShortUrl) {
 					if(plus.os.name == "Android") {
 						var Context = plus.android.importClass("android.content.Context");
@@ -161,7 +161,7 @@
 					return
 				}
 
-				let appMap = {
+				var appMap = {
 					wx: {
 						pname: "com.tencent.mm",
 						action: 'weixin://',
@@ -174,7 +174,7 @@
 					}
 				}
 
-				let app = appMap[appTag]
+				var app = appMap[appTag]
 				if(!plus.runtime.isApplicationExist({
 						pname: app.pname,
 						action: app.action

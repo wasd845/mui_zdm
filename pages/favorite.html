@@ -78,7 +78,12 @@
 			})
 
 			function getData() {
-				goodslist = JSON.parse(plus.storage.getItem("favorite"))
+				var obj = JSON.parse(plus.storage.getItem("favorite"))
+				
+				for(var key in obj){
+					goodslist.unshift(obj[key])
+				}
+				
 				if(!goodslist) {
 					$("#nodata").css("display", "flex")
 					$('#listview').html("")
@@ -94,7 +99,7 @@
 			}
 
 			function goodsTap(e) {
-				let idx = e.dataset['idx']
+				var idx = e.dataset['idx']
 				if(goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',

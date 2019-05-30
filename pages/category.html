@@ -81,7 +81,7 @@
 				if(general_classify.length > 0) {
 					return
 				}
-				let classifyStr = plus.storage.getItem("general_classify")
+				var classifyStr = plus.storage.getItem("general_classify")
 				if(classifyStr) {
 					general_classify = JSON.parse(classifyStr)
 					leftTap(0)
@@ -113,7 +113,7 @@
 			}
 
 			function renderleft() {
-				let html = template('leftTpl', {
+				var html = template('leftTpl', {
 					classify: general_classify,
 					leftIdx: leftIdx
 				})
@@ -121,7 +121,7 @@
 			}
 
 			function renderright(idx) {
-				let html = template('rightTpl', {
+				var html = template('rightTpl', {
 					classify2: general_classify[idx].data,
 					pid: general_classify[idx].cid
 				})
@@ -133,8 +133,8 @@
 			}
 
 			function tolist(e) {
-				let pidx = e.dataset.pidx
-				let idx = e.dataset.idx
+				var pidx = e.dataset.pidx
+				var idx = e.dataset.idx
 
 				mui.openWindow({
 					url: "goodslist.html",
