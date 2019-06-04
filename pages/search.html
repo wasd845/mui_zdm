@@ -79,7 +79,7 @@
 						auto: false, //可选,默认false.首次加载自动上拉刷新一次
 						callback: function() { //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 							var hotkey_display = $("#hotkey-wrap").css("display")
-							if(hotkey_display == "block") {
+							if (hotkey_display == "block") {
 								mui('#listview').pullRefresh().endPulldown();
 								return
 							}
@@ -96,7 +96,7 @@
 						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
 						callback: function() { //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 							var hotkey_display = $("#hotkey-wrap").css("display")
-							if(hotkey_display == "block") {
+							if (hotkey_display == "block") {
 								return
 							}
 							search();
@@ -105,7 +105,7 @@
 				},
 				beforeback: function() {
 					var hotkey_display = $("#hotkey-wrap").css("display")
-					if(hotkey_display == "none") {
+					if (hotkey_display == "none") {
 						$("#hotkey-wrap").css("display", "block")
 						$("#result-wrap").css("display", "none")
 						goodslist = [];
@@ -116,7 +116,7 @@
 				}
 			})
 			var hotkey = []
-			mui.plusReady(() => {
+			mui.plusReady(function() {
 				hotkey = JSON.parse(plus.storage.getItem("hotkey"))
 				$(".kw").val(hotkey[0]["keyword"])
 
@@ -131,7 +131,7 @@
 				$("#hotkey-wrap").css("display", "none")
 				$("#result-wrap").css("display", "block")
 				var kw = $(".kw").val()
-				if(!kw) {
+				if (!kw) {
 					plus.nativeUI.toast("请输入关键词")
 					return
 				}
@@ -159,7 +159,8 @@
 			var nomore = false;
 			var pageCount = 50;
 			var goodslist = []
-			var pageIdx=1
+			var pageIdx = 1
+
 			function search() {
 				var kw = $(".kw").val()
 				var params = {
@@ -169,16 +170,16 @@
 					tb_p: tb_p
 				}
 
-				api.superSearch(params, (res) => {
-					if(res.code == 1) {
+				api.superSearch(params, function(res) {
+					if (res.code == 1) {
 
 						var list = res['data']
 						nomore = list.length < pageCount
 
-						if(min_id == 1) {
+						if (min_id == 1) {
 							goodslist = []
-							pageIdx=1
-						}else{
+							pageIdx = 1
+						} else {
 							pageIdx++
 						}
 						goodslist = goodslist.concat(list)
@@ -188,10 +189,10 @@
 							pageIdx: pageIdx
 						})
 
-						if(pageIdx == 1) {
+						if (pageIdx == 1) {
 							$('#listview').html(html)
 
-						} else if(pageIdx > 1 && list.length > 0) {
+						} else if (pageIdx > 1 && list.length > 0) {
 
 							$('#listview').append(html)
 
@@ -205,10 +206,10 @@
 
 				})
 
-				if(pageIdx == 1 && mui('#listview').pullRefresh()) {
+				if (pageIdx == 1 && mui('#listview').pullRefresh()) {
 					mui('#listview').pullRefresh().endPulldown();
 				}
-				if(mui('#listview').pullRefresh()) {
+				if (mui('#listview').pullRefresh()) {
 					mui('#listview').pullRefresh().endPullupToRefresh(nomore);
 				}
 
@@ -216,7 +217,7 @@
 
 			//关键词输入框监听 软键盘搜索
 			document.getElementById("kw").addEventListener("keypress", function(event) {
-				if(event.keyCode == "13") {
+				if (event.keyCode == "13") {
 					document.activeElement.blur();
 					doSearch()
 				}
@@ -225,7 +226,7 @@
 			//跳转到商品详情
 			function goodsTap(e) {
 				var idx = e.dataset['idx']
-				if(goodslist[idx] && window.plus) {
+				if (goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',
 						id: 'detail',
@@ -275,10 +276,10 @@
 			var scrollTop = 0;
 			window.onscroll = function() {
 				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-				if(scrollTop > 1500 && !totop) {
+				if (scrollTop > 1500 && !totop) {
 					totop = true;
 					totopIn()
-				} else if(scrollTop < 500 && totop) {
+				} else if (scrollTop < 500 && totop) {
 					totop = false;
 					totopOut()
 				}

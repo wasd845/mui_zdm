@@ -65,17 +65,18 @@
 				},
 			})
 
-			mui.plusReady(() => {
+			mui.plusReady(function() {
 				getGoods();
 			})
 
 			//商品列表
 			var goodslist = []
+
 			function getGoods() {
 				scrolltotop()
 
-				api.getTopGoods((res) => {
-					if(res.code == 1) {
+				api.getTopGoods(function(res) {
+					if (res.code == 1) {
 
 						var list = res['data']
 						//仅用于缓存(点击跳转详情)
@@ -86,20 +87,20 @@
 						})
 
 						$('#listview').html(html)
-				
+
 						myLazyLoad.update()
 					}
 
 				})
 
-				if(mui('#pullrefresh').pullRefresh()) {
+				if (mui('#pullrefresh').pullRefresh()) {
 					mui('#pullrefresh').pullRefresh().endPulldown();
 				}
 			}
 
 			function goodsTap(e) {
 				var idx = e.dataset['idx']
-				if(goodslist[idx] && window.plus) {
+				if (goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',
 						id: 'detail',
@@ -149,10 +150,10 @@
 			var scrollTop = 0;
 			window.onscroll = function() {
 				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-				if(scrollTop > 1500 && !totop) {
+				if (scrollTop > 1500 && !totop) {
 					totop = true;
 					totopIn()
-				} else if(scrollTop < 500 && totop) {
+				} else if (scrollTop < 500 && totop) {
 					totop = false;
 					totopOut()
 				}

@@ -79,7 +79,7 @@
 				},
 			})
 
-			mui.plusReady(() => {
+			mui.plusReady(function() {
 				var self = plus.webview.currentWebview();
 				$("h1.mui-title").html(self.title)
 				getGoods(self.sid);
@@ -89,8 +89,8 @@
 			var goodslist = []
 
 			function getGoods(sid) {
-				api.getSubjectGoods(sid, (res) => {
-					if(res.code == 1) {
+				api.getSubjectGoods(sid, function(res) {
+					if (res.code == 1) {
 
 						var list = res['data']
 						//仅用于缓存(点击跳转详情)
@@ -108,7 +108,7 @@
 			}
 
 			function goodsTap(idx) {
-				if(goodslist[idx] && window.plus) {
+				if (goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',
 						id: 'detail',
@@ -158,10 +158,10 @@
 			var scrollTop = 0;
 			window.onscroll = function() {
 				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-				if(scrollTop > 1500 && !totop) {
+				if (scrollTop > 1500 && !totop) {
 					totop = true;
 					totopIn()
-				} else if(scrollTop < 500 && totop) {
+				} else if (scrollTop < 500 && totop) {
 					totop = false;
 					totopOut()
 				}

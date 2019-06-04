@@ -71,18 +71,18 @@
 			mui.init()
 
 			var general_classify = []
-			mui.plusReady(() => {
+			mui.plusReady(function() {
 				plus.webview.currentWebview().setStyle({
 					scrollIndicator: 'none'
 				});
 			})
 
 			window.addEventListener("show", function() {
-				if(general_classify.length > 0) {
+				if (general_classify.length > 0) {
 					return
 				}
 				var classifyStr = plus.storage.getItem("general_classify")
-				if(classifyStr) {
+				if (classifyStr) {
 					general_classify = JSON.parse(classifyStr)
 					leftTap(0)
 				} else {
@@ -92,8 +92,8 @@
 
 			//分类接口
 			function getCategory() {
-				api.getCategory((res) => {
-					if(res.code == 1) {
+				api.getCategory(function(res) {
+					if (res.code == 1) {
 						classifyStr = res['general_classify'];
 						leftTap(0)
 
@@ -127,7 +127,7 @@
 				})
 				$('#segmentedControlContents').html(html)
 
-				if(myLazyLoad) {
+				if (myLazyLoad) {
 					myLazyLoad.update()
 				}
 			}

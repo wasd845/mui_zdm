@@ -158,11 +158,11 @@
 				15: "20:00"
 			}
 
-			mui.plusReady(() => {
+			mui.plusReady(function() {
 				plus.webview.currentWebview().setStyle({
 					scrollIndicator: 'none'
 				});
-				
+
 				var html = template('tabTpl', {
 					hourMap: hourMap,
 				})
@@ -185,19 +185,19 @@
 			window.addEventListener("show", function() {
 				var h = new Date().getHours();
 				var hour_type = -1;
-				if(h < 10) {
+				if (h < 10) {
 					hour_type = 6
-				} else if(h < 15) {
+				} else if (h < 15) {
 					hour_type = 7
-				} else if(h < 19) {
+				} else if (h < 19) {
 					hour_type = 8
-				} else if(h < 20) {
+				} else if (h < 20) {
 					hour_type = 9
-				} else if(h < 24) {
+				} else if (h < 24) {
 					hour_type = 10
 				}
 
-				if(hour_type != -1) {
+				if (hour_type != -1) {
 					hourType = hour_type
 					setTimeout(function() { //延迟执行（等待页面加载）
 						renderTabbar(hour_type - 1)
@@ -226,9 +226,9 @@
 				var slideCenter = slideLeft + slideWidth / 2
 
 				mySwiper.setTransition(500)
-				if(slideCenter < swiperWidth / 2) {
+				if (slideCenter < swiperWidth / 2) {
 					mySwiper.setTranslate(0)
-				} else if(slideCenter > maxWidth) {
+				} else if (slideCenter > maxWidth) {
 					mySwiper.setTranslate(maxTranslate)
 				} else {
 					nowTlanslate = slideCenter - swiperWidth / 2
@@ -252,8 +252,8 @@
 					behavior: "smooth"
 				})
 
-				api.getFastbuy(hourType, (res) => {
-					if(res.code == 1) {
+				api.getFastbuy(hourType, function(res) {
+					if (res.code == 1) {
 
 						goodslist = res['data']
 
@@ -268,19 +268,19 @@
 
 				})
 
-				if(mui('#pullrefresh').pullRefresh()) {
+				if (mui('#pullrefresh').pullRefresh()) {
 					mui('#pullrefresh').pullRefresh().endPulldown();
 				}
 			}
 
 			//商品点击
 			function goodsTap(idx) {
-				if(goodslist[idx] && window.plus) {
-					if(goodslist[idx].grab_type == 1) {
+				if (goodslist[idx] && window.plus) {
+					if (goodslist[idx].grab_type == 1) {
 						plus.nativeUI.toast("咚咚抢即将开始")
 						return
 					}
-					if(goodslist[idx].grab_type == 2) {
+					if (goodslist[idx].grab_type == 2) {
 						plus.nativeUI.toast("此商品已抢光")
 						return
 					}

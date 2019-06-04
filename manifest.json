@@ -3,8 +3,8 @@
     "id" : "H58A1D3C8", /*应用的标识，创建应用时自动生成，勿手动修改*/
     "name" : "张大妈", /*应用名称，程序桌面图标名称*/
     "version" : {
-        "name" : "30", /*应用版本名称*/
-        "code" : 90
+        "name" : "31", /*应用版本名称*/
+        "code" : 91
     },
     "description" : "天猫优惠券", /*应用描述信息*/
     "icons" : {
@@ -29,6 +29,12 @@
         "Statistic" : {}
     },
     "plus" : {
+		"confusion": {   
+                "description": "JS原生混淆",   
+                "resources": {   
+                        "js/api.js": {} 
+                }   
+        },
         "splashscreen" : {
             "autoclose" : false, /*是否自动关闭程序启动界面，true表示应用加载应用入口页面后自动关闭；false则需调plus.navigator.closeSplashscreen()关闭*/
             "waiting" : true,
@@ -62,8 +68,6 @@
                 "aliasname" : "", /*Android应用打包使用密钥库中证书的别名*/
                 "permissions" : [
                     "<uses-permission android:name=\"android.permission.INTERNET\"/>",
-                    "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
-                    "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>"
                 ]
             },

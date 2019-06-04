@@ -73,19 +73,19 @@
 			})
 
 			var goodslist = []
-			mui.plusReady(() => {
+			mui.plusReady(function() {
 				getData()
 			})
 
 			function getData() {
 				var obj = JSON.parse(plus.storage.getItem("footprint"))
-				
-				for(var key in obj){
+
+				for (var key in obj) {
 					goodslist.unshift(obj[key])
 				}
-				
-								
-				if(!goodslist) {
+
+
+				if (!goodslist) {
 					$("#nodata").css("display", "flex")
 					$('#listview').html("")
 					return
@@ -101,7 +101,7 @@
 
 			function goodsTap(e) {
 				var idx = e.dataset['idx']
-				if(goodslist[idx] && window.plus) {
+				if (goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',
 						id: 'detail',
@@ -123,7 +123,7 @@
 
 				plus.nativeUI.confirm('清除所有足迹！', function(e) {
 					console.log(e.index);
-					if(e.index == 0) {
+					if (e.index == 0) {
 						plus.storage.removeItem("footprint")
 						getData()
 					}
@@ -163,10 +163,10 @@
 			var scrollTop = 0;
 			window.onscroll = function() {
 				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-				if(scrollTop > 1500 && !totop) {
+				if (scrollTop > 1500 && !totop) {
 					totop = true;
 					totopIn()
-				} else if(scrollTop < 500 && totop) {
+				} else if (scrollTop < 500 && totop) {
 					totop = false;
 					totopOut()
 				}

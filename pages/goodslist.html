@@ -94,7 +94,7 @@
 			var cate_idx = 0;
 			var cate_pidx = "";
 			var cate_son_idx = "";
-			mui.plusReady(() => {
+			mui.plusReady(function() {
 
 				var self = plus.webview.currentWebview()
 				//一级分类idx
@@ -109,7 +109,7 @@
 				//读取分类数据 渲染选项卡
 				getCategory()
 
-				if(cate_pidx && cate_son_idx) {
+				if (cate_pidx && cate_son_idx) {
 					$("#currTab").click()
 				} else {
 					min_id = 1;
@@ -125,7 +125,7 @@
 			//分类接口
 			function getCategory() {
 
-				if(catelist.length == 0) {
+				if (catelist.length == 0) {
 					catelist = JSON.parse(plus.storage.getItem("general_classify"));
 				}
 
@@ -145,7 +145,7 @@
 				keyword = sonlist[currTab]["son_name"]
 
 				renderTabbar();
-				
+
 				scrolltotop();
 
 				min_id = 1;
@@ -164,11 +164,11 @@
 
 			//重新渲染选项卡视图
 			function renderTabbar() {
-				if(cate_pidx == "" || cate_son_idx == "") {
+				if (cate_pidx == "" || cate_son_idx == "") {
 					return
 				}
 
-				if(sonlist.length == 0) {
+				if (sonlist.length == 0) {
 					sonlist = catelist[cate_idx].data[cate_pidx]["info"]
 				}
 
@@ -191,29 +191,30 @@
 			var keyword = ""
 			var cid = 0
 			var goodslist = []
-			var pageIdx=1
+			var pageIdx = 1
+
 			function getGoods() {
 				var params = {
 					cid: cid,
 					back: pageCount,
 					min_id: min_id
 				}
-				if(keyword) {
+				if (keyword) {
 					params['keyword'] = keyword
 				}
 
-				api.getCategoryGoods(params, (res) => {
-					if(res.code == 1) {
+				api.getCategoryGoods(params, function(res) {
+					if (res.code == 1) {
 
 						var list = res['data']
 						nomore = list.length < pageCount
-						if(min_id == 1) {
+						if (min_id == 1) {
 							goodslist = []
-							pageIdx=1
-						}else{
+							pageIdx = 1
+						} else {
 							pageIdx++
 						}
-						
+
 						//仅用于缓存(点击跳转详情)
 						goodslist = goodslist.concat(list)
 
@@ -222,10 +223,10 @@
 							pageIdx: pageIdx
 						})
 
-						if(pageIdx == 1) {
+						if (pageIdx == 1) {
 							$('#listview').html(html)
 
-						} else if(pageIdx > 1 && list.length > 0) {
+						} else if (pageIdx > 1 && list.length > 0) {
 
 							$('#listview').append(html)
 
@@ -238,17 +239,17 @@
 
 				})
 
-				if(pageIdx == 1 && mui('#pullrefresh').pullRefresh()) {
+				if (pageIdx == 1 && mui('#pullrefresh').pullRefresh()) {
 					mui('#pullrefresh').pullRefresh().endPulldown();
 				}
-				if(mui('#pullrefresh').pullRefresh()) {
+				if (mui('#pullrefresh').pullRefresh()) {
 					mui('#pullrefresh').pullRefresh().endPullupToRefresh(nomore);
 				}
 			}
 
 			function goodsTap(e) {
 				var idx = e.dataset['idx']
-				if(goodslist[idx] && window.plus) {
+				if (goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',
 						id: 'detail',
@@ -298,10 +299,10 @@
 			var scrollTop = 0;
 			window.onscroll = function() {
 				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-				if(scrollTop > 1500 && !totop) {
+				if (scrollTop > 1500 && !totop) {
 					totop = true;
 					totopIn()
-				} else if(scrollTop < 500 && totop) {
+				} else if (scrollTop < 500 && totop) {
 					totop = false;
 					totopOut()
 				}

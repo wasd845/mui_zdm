@@ -60,30 +60,30 @@
 
 		var subpages = ['pages/home.html', 'pages/category.html', 'pages/ddq.html', 'pages/my.html'];
 		var titles = ['首页', '分类', '咚咚抢', '我的'];
-		var subpage_style = {　　
+		var subpage_style = {
 			top: '0px',
-			　　bottom: '61px',
-			　　hardwareAccelerated: true //开启硬件加速
+			bottom: '61px',
+			hardwareAccelerated: true //开启硬件加速
 		};
 		var activeTab = subpages[0];
 
 		function initSubPages() {
 			var self = plus.webview.currentWebview();
 			plus.storage.setItem('MainID', self.id)
-			for(var i = 0; i < subpages.length; i++) {　　　　　
-				var sub = plus.webview.create(subpages[i], subpages[i], subpage_style);　　　
-				if(i > 0) {　　
-					sub.hide();　　　　
-				}　　　
-				self.append(sub);　　
+			for (var i = 0; i < subpages.length; i++) {
+				var sub = plus.webview.create(subpages[i], subpages[i], subpage_style);
+				if (i > 0) {
+					sub.hide();
+				}
+				self.append(sub);
 			}
-			mui('.mui-bar-tab').on('tap', 'a', function(e) {　
-				
-				var targetTab = this.getAttribute('href');　　
+			mui('.mui-bar-tab').on('tap', 'a', function(e) {
 
-				if(targetTab == activeTab) {
+				var targetTab = this.getAttribute('href');
+
+				if (targetTab == activeTab) {
 					return;
-				}　　
+				}
 
 				var targetPage = plus.webview.getWebviewById(targetTab)
 				mui.fire(targetPage, 'show')
@@ -117,7 +117,7 @@
 		function checkUpdate() {
 			plus.runtime.getProperty(plus.runtime.appid, function(wgtinfo) {
 				var currVersion = wgtinfo.version;
-				if(mui.os.android) {
+				if (mui.os.android) {
 					mui.ajax('http://zdm100.com/app/appversion.json', {
 						dataType: 'json',
 						type: 'get',
@@ -129,18 +129,18 @@
 							//>0 提示
 							//\n\n 红红 \n 恍恍惚惚
 							console.log(JSON.stringify(data))
-							if(data.version > currVersion && data.level > 0) {
-								if(data.level == 1) {
-									plus.nativeUI.confirm('发现新版本，点击体验最新版本！'+data.desc, function(e) {
+							if (data.version > currVersion && data.level > 0) {
+								if (data.level == 1) {
+									plus.nativeUI.confirm('发现新版本，点击体验最新版本！' + data.desc, function(e) {
 										console.log(e.index);
-										if(e.index == 0) {
+										if (e.index == 0) {
 											downApk(data.url);
 										}
 									}, '更新');
-								} else if(data.level == 2) {
-									plus.nativeUI.alert('此版本有重要更新，点击更新到最新版本才能正常使用！'+data.desc, function(e) {
+								} else if (data.level == 2) {
+									plus.nativeUI.alert('此版本有重要更新，点击更新到最新版本才能正常使用！' + data.desc, function(e) {
 										console.log(e.index);
-										if(e.index == 0) {
+										if (e.index == 0) {
 											downApk(data.url);
 										}
 									}, '重要更新', "更新");
@@ -165,19 +165,19 @@
 		function downApk(url) {
 			wgtWaiting = plus.nativeUI.showWaiting("开始下载");
 			var dtask = plus.downloader.createDownload(url, {}, function(d, status) {
-				if(status == 200) { // 下载成功
+				if (status == 200) { // 下载成功
 					var path = d.filename;
 					plus.runtime.install(path); // 安装下载的apk文件
 				} else {
 					plus.nativeUI.toast('下载失败，请稍后重试...');
 				}
-				if(wgtWaiting) {
+				if (wgtWaiting) {
 					wgtWaiting.close();
 				}
 			});
 
 			dtask.addEventListener("statechanged", function(download, status) {
-				switch(download.state) {
+				switch (download.state) {
 					case 2:
 						wgtWaiting.setTitle("已连接到服务器");
 						break;

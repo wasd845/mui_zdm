@@ -56,10 +56,10 @@
 				},
 			})
 
-			mui.plusReady(() => {
+			mui.plusReady(function() {
 
-				api.getTalent((res) => {
-					if(res.code == 1) {
+				api.getTalent(function(res) {
+					if (res.code == 1) {
 
 						var html = template('talentTpl', {
 							talent: res.data.newdata,

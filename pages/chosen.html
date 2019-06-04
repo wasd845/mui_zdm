@@ -85,7 +85,7 @@
 				},
 			})
 
-			mui.plusReady(() => {
+			mui.plusReady(function() {
 				min_id = 1;
 				getGoods();
 			})
@@ -95,17 +95,18 @@
 			var nomore = false;
 			var min_id = 1;
 			var goodslist = []
-			var pageIdx=1
+			var pageIdx = 1
+
 			function getGoods() {
-				api.getJuGoods(min_id, (res) => {
-					if(res.code == 1) {
+				api.getJuGoods(min_id, function(res) {
+					if (res.code == 1) {
 
 						var list = res['data']
 						nomore = list.length < pageCount
-						if(min_id == 1) {
+						if (min_id == 1) {
 							goodslist = []
-							pageIdx=1
-						}else{
+							pageIdx = 1
+						} else {
 							pageIdx++
 						}
 
@@ -117,10 +118,10 @@
 							pageIdx: pageIdx
 						})
 
-						if(pageIdx == 1) {
+						if (pageIdx == 1) {
 							$('#listview').html(html)
 
-						} else if(pageIdx > 1 && list.length > 0) {
+						} else if (pageIdx > 1 && list.length > 0) {
 
 							$('#listview').append(html)
 
@@ -133,17 +134,17 @@
 
 				})
 
-				if(pageIdx == 1 && mui('#pullrefresh').pullRefresh()) {
+				if (pageIdx == 1 && mui('#pullrefresh').pullRefresh()) {
 					mui('#pullrefresh').pullRefresh().endPulldown();
 				}
-				if(mui('#pullrefresh').pullRefresh()) {
+				if (mui('#pullrefresh').pullRefresh()) {
 					mui('#pullrefresh').pullRefresh().endPullupToRefresh(nomore);
 				}
 			}
 
 			function goodsTap(e) {
 				var idx = e.dataset['idx']
-				if(goodslist[idx] && window.plus) {
+				if (goodslist[idx] && window.plus) {
 					mui.openWindow({
 						url: 'detail.html',
 						id: 'detail',
@@ -193,10 +194,10 @@
 			var scrollTop = 0;
 			window.onscroll = function() {
 				scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-				if(scrollTop > 1500 && !totop) {
+				if (scrollTop > 1500 && !totop) {
 					totop = true;
 					totopIn()
-				} else if(scrollTop < 500 && totop) {
+				} else if (scrollTop < 500 && totop) {
 					totop = false;
 					totopOut()
 				}

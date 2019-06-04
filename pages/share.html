@@ -18,8 +18,8 @@
 		<div class="mui-content">
 
 			<textarea rows="8">
-			
-			
+
+
 			</textarea>
 
 			<button class="copyBtn" onclick="copy()">复制文案</button>
@@ -54,7 +54,7 @@
 			var share_pic_sd_path = ""
 			mui.init()
 
-			mui.plusReady(() => {
+			mui.plusReady(function() {
 				var self = plus.webview.currentWebview();
 				goods = self.goods
 				setData()
@@ -70,7 +70,7 @@
 				//下载主图（用于分享）
 				plus.downloader.createDownload(goods.itempic + "_310x310.jpg", {
 					filename: "_downloads/share_pic.jpg"
-				}, (d, status) => {
+				}, function(d, status) {
 					share_pic_sd_path = plus.io.convertLocalFileSystemURL(d.filename)
 					console.log(share_pic_sd_path)
 				}).start();
@@ -78,16 +78,16 @@
 			//淘口令
 			function getTkl() {
 				//生成淘口令（根据优惠券链接）
-				api.getTkl(goods["coupon_click_url"], (resp) => {
-					goods["tkl"] = resp["tkl"]
+				api.getTkl(goods["coupon_click_url"], function(resp) {
+					goods["tkl"] = resp["model"]
 					getShortUrl()
 				})
 			}
 
 			//短网址
 			function getShortUrl() {
-				api.getShortUrl(goods["coupon_click_url"], (res) => {
-					if(res.Code == 0) {
+				api.getShortUrl(goods["coupon_click_url"], function(res) {
+					if (res.Code == 0) {
 						goods["ShortUrl"] = res.ShortUrl
 					} else {
 						goods["ShortUrl"] = "http://zdm100.com"
@@ -98,12 +98,12 @@
 
 			//生成高佣链接
 			function getGaoyongUrl(itemid) {
-				if(goods["coupon_click_url"]) {
+				if (goods["coupon_click_url"]) {
 					getTkl()
 					return
 				}
-				api.getGaoyong(itemid, (res) => {
-					if(res.code == 1 && res.data["coupon_click_url"]) {
+				api.getGaoyong(itemid, function(res) {
+					if (res.code == 1 && res.data["coupon_click_url"]) {
 						coupon_click_url = res.data["coupon_click_url"]
 						goods["coupon_click_url"] = coupon_click_url
 						getTkl()
@@ -112,7 +112,8 @@
 
 			}
 
-			var shareTpl = "{{goods.itemtitle}}\r\n【在售价】{{goods.itemprice}}元\r\n【券后价】{{goods.itemendprice}}元\r\n【下单链接】{{goods.ShortUrl}}\r\n－－－－－－－－－－－－\r\n复制这条信息{{goods.tkl}}打开【手机淘宝】即可领券";
+			var shareTpl =
+				"{{goods.itemtitle}}\r\n【在售价】{{goods.itemprice}}元\r\n【券后价】{{goods.itemendprice}}元\r\n【下单链接】{{goods.ShortUrl}}\r\n－－－－－－－－－－－－\r\n复制这条信息{{goods.tkl}}打开【手机淘宝】即可领券";
 
 			function setData() {
 				plus.nativeUI.closeWaiting()
@@ -124,15 +125,15 @@
 
 			function copy() {
 				var shareStr = $("textarea").html()
-				if(goods.tkl && goods.ShortUrl) {
-					if(plus.os.name == "Android") {
+				if (goods.tkl && goods.ShortUrl) {
+					if (plus.os.name == "Android") {
 						var Context = plus.android.importClass("android.content.Context");
 						var main = plus.android.runtimeMainActivity();
 						var clip = main.getSystemService(Context.CLIPBOARD_SERVICE);
 						plus.android.invoke(clip, "setText", shareStr);
 						copyed = true;
 						plus.nativeUI.toast("复制成功")
-					} else if(plus.os.name == "iOS") {
+					} else if (plus.os.name == "iOS") {
 						var UIPasteboard = plus.ios.importClass("UIPasteboard");
 						var generalPasteboard = UIPasteboard.generalPasteboard();
 						//设置/获取文本内容:
@@ -156,7 +157,7 @@
 			var copyed = false;
 
 			function launchApp(appTag) {
-				if(!copyed) {
+				if (!copyed) {
 					plus.nativeUI.toast("请先复制文案")
 					return
 				}
@@ -175,7 +176,7 @@
 				}
 
 				var app = appMap[appTag]
-				if(!plus.runtime.isApplicationExist({
+				if (!plus.runtime.isApplicationExist({
 						pname: app.pname,
 						action: app.action
 					})) {

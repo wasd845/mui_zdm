@@ -154,7 +154,7 @@
 				},
 			})
 
-			mui.plusReady(() => {
+			mui.plusReady(function() {
 
 				plus.webview.currentWebview().setStyle({
 					scrollIndicator: 'none'
@@ -162,7 +162,7 @@
 
 				getHostKey()
 
-				setTimeout(() => {
+				setTimeout(function() {
 					plus.navigator.closeSplashscreen();
 				}, 2000)
 
@@ -173,7 +173,7 @@
 
 			//分类接口
 			function getCategory() {
-				api.getCategory((res) => {
+				api.getCategory(function(res) {
 					if (res.code == 1) {
 						catelist = res['general_classify'];
 						//分类数据缓存到本地
@@ -218,7 +218,7 @@
 			var subgect = []
 
 			function getSubject() {
-				api.getSubject((res) => {
+				api.getSubject(function(res) {
 					if (res.code == 1) {
 						subgect = res.data
 						var html = template('bannerTpl', {
@@ -267,7 +267,7 @@
 					params["cid"] = catelist[currTab]["cid"]
 				}
 
-				api.getGoods(params, (res) => {
+				api.getGoods(params, function(res) {
 					if (res.code == 1) {
 
 						var list = res['data']
@@ -334,7 +334,7 @@
 					return
 				}
 
-				api.getHotkey((res) => {
+				api.getHotkey(function(res) {
 					if (res.code == 1) {
 						var hotkey = res.data;
 

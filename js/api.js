@@ -125,12 +125,19 @@ var api = {
 		getJSON(url, callback)
 	},
 	//生成淘口令
+	// getTkl: function(quanUrl, callback) {
+	// 	var url = "http://zxt.zdm100.com/mktkl"
+	// 	postRequest(url, {
+	// 		quanUrl: quanUrl
+	// 	}, callback, "")
+	// },
+
 	getTkl: function(quanUrl, callback) {
-		var url = "http://zxt.zdm100.com/mktkl"
-		postRequest(url, {
-			quanUrl: quanUrl
-		}, callback, "")
+		var url = "http://api.tkurl.top/Kl_Create?appkey=vOK5J3iL&text=来自张大妈分享的优惠券&url=" + quanUrl;
+		getJSON(url, callback, "")
 	},
+
+
 	//短网址
 	getShortUrl(longUrl, callback) {
 		var apiUrl = "https://dwz.cn/admin/v2/create"
